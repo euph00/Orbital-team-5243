@@ -1,3 +1,7 @@
+##############################################################
+#Preliminary boiler plate code with pretrained model from GFG#
+##############################################################
+
 # Import required packages
 import cv2
 import pytesseract
