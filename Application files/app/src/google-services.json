@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "356171772264",
+    "project_id": "scribex-1653106340524",
+    "storage_bucket": "scribex-1653106340524.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356171772264:android:268c1f068962bc5dc6a6dd",
+        "android_client_info": {
+          "package_name": "com.orbital.scribex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356171772264-qildv5k3gtmcqho9hruqffbj1hlodrge.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.orbital.scribex",
+            "certificate_hash": "b352b137e1f4e737344616bf2472a04c0289921b"
+          }
+        },
+        {
+          "client_id": "356171772264-01r6n8gbh0vlkrjmitakgja85jrhc3t0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4sUz9onybRZymZ30n0WNIA-5jO39K3XM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356171772264-01r6n8gbh0vlkrjmitakgja85jrhc3t0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
