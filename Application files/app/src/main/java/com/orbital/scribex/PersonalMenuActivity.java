@@ -10,7 +10,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PersonalMenu extends AppCompatActivity {
+public class PersonalMenuActivity extends AppCompatActivity {
 
     private RecyclerView recViewDocs;
     private recViewDocsAdapter adapter;
@@ -34,5 +34,6 @@ public class PersonalMenu extends AppCompatActivity {
         docs.add(new Document(5, "document 5", "datetime", "text for document 5", "text for document 5"));
         docs.add(new Document(6, "document 6", "datetime", "text for document 6", "text for document 6"));
 
+        adapter.setDocs(docs);
     }
 }

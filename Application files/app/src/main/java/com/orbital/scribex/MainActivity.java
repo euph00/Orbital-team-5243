@@ -2,24 +2,26 @@ package com.orbital.scribex;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btn;
+    private Button btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btn = findViewById(R.id.button);
+        this.btnLogin = findViewById(R.id.btnLogin);
     }
 
-    public void onBtnClick(View view) {
-        Toast.makeText(this, "test", Toast.LENGTH_SHORT).show();
+    public void btnLoginOnclick(View view) {
+        //TODO: implement google login
+        Intent loginIntent = new Intent(this, PersonalMenuActivity.class);
+        startActivity(loginIntent);
     }
 }
