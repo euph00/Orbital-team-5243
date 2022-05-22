@@ -5,7 +5,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +17,23 @@ public class PersonalMenuActivity extends AppCompatActivity {
 
     private RecyclerView recViewDocs;
     private recViewDocsAdapter adapter;
+    private TextView username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_menu);
 
+        username = findViewById(R.id.textViewUsername);
+
+        Intent intent = this.getIntent();
+        String idToken = intent.getStringExtra("idToken");
+        Toast.makeText(this, idToken, Toast.LENGTH_LONG).show();
+
         adapter = new recViewDocsAdapter(this);
         recViewDocs = findViewById(R.id.recViewDocs);
+
+        username.setText(idToken);
 
         recViewDocs.setAdapter(adapter);
         recViewDocs.setLayoutManager(new LinearLayoutManager(this));
