@@ -83,12 +83,14 @@ public class MainActivity extends AppCompatActivity {
             int rc = result.getResultCode();
 
             if (rc == Activity.RESULT_OK) { //google sign in completed
+                Toast.makeText(MainActivity.this, "Google result OK", Toast.LENGTH_SHORT).show();
                 //retrieve result of external activity (google one touch activity)
                 Intent intent = result.getData();
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
                 try {
                     //Google sign in was successful, authenticate with firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
+                    Toast.makeText(MainActivity.this, "Authenticate with firebase", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { //firebase authorised
+                            Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_LONG).show();
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
