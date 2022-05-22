@@ -71,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            //if signed out of firebase, sign out of google as well
+            mGoogleSignInClient.signOut();
+            Toast.makeText(this, "logged out", Toast.LENGTH_LONG).show();
+        }
+
         updateUI(currentUser);
     }
 
@@ -115,12 +122,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { //firebase authorised
-                            Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
-                            Toast.makeText(MainActivity.this, "Firebase sign in failed", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Firebase sign in failed", Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             updateUI(null);
                         }
@@ -132,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
-            Intent mainMenuIntent = new Intent(this, PersonalMenuActivity.class);
-            mainMenuIntent.putExtra("idToken", user.getUid());
-            startActivity(mainMenuIntent);
+            Intent menuIntent = new Intent(this, PersonalMenuActivity.class);
+            menuIntent.putExtra("idToken", user.getUid());
+            startActivity(menuIntent);
         }
     }
 
