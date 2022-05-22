@@ -5,6 +5,7 @@
 # Import required packages
 import cv2
 import pytesseract
+import uuid
 
 # Mention the installed location of Tesseract-OCR in your system
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -13,7 +14,12 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\t
 img = cv2.imread(r"C:\Users\User\Downloads\Capture1.png")
 
 
+
+
 def turn_img_into_text(img):
+
+	jsonfileName = str(uuid.uuid4())+".json"
+	
 	# Convert the image to gray scale
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -37,7 +43,7 @@ def turn_img_into_text(img):
 	im2 = img.copy()
 
 	# A text file is created and flushed
-	file = open("recognized.txt", "w+")
+	file = open(jsonfileName, "w+")
 	file.write("")
 	file.close()
 
@@ -45,7 +51,7 @@ def turn_img_into_text(img):
 	# Then rectangular part is cropped and passed on
 	# to pytesseract for extracting text from it
 	# Extracted text is then written into the text file
-	output = ''
+	output = []
 	for cnt in contours:
 		x, y, w, h = cv2.boundingRect(cnt)
 			
@@ -56,18 +62,18 @@ def turn_img_into_text(img):
 		cropped = im2[y:y + h, x:x + w]
 			
 		# Open the file in append mode
-		file = open("recognized.txt", "a")
+		file = open(jsonfileName, "a")
 			
 		# Apply OCR on the cropped image
 		text = pytesseract.image_to_string(cropped)
-		output = output + text
-	return output
+		output.append(text)
 		# # Appending the text into file
-		# file.write(text)
-		# file.write("\n")
+		file.write(text)
+		file.write("\n")
 			
-		# # Close the file
-		# file.close	
+		# # # Close the file
+		file.close	
+	return jsonfileName
 
 
 
