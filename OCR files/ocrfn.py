@@ -18,7 +18,7 @@ img = cv2.imread(r"C:\Users\User\Downloads\Capture1.png")
 
 def turn_img_into_text(img):
 
-	jsonfileName = str(uuid.uuid4())+".json"
+	fileName = str(uuid.uuid4())+".txt"
 	
 	# Convert the image to gray scale
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -43,7 +43,7 @@ def turn_img_into_text(img):
 	im2 = img.copy()
 
 	# A text file is created and flushed
-	file = open(jsonfileName, "w+")
+	file = open(fileName, "w+")
 	file.write("")
 	file.close()
 
@@ -62,7 +62,7 @@ def turn_img_into_text(img):
 		cropped = im2[y:y + h, x:x + w]
 			
 		# Open the file in append mode
-		file = open(jsonfileName, "a")
+		file = open(fileName, "a")
 			
 		# Apply OCR on the cropped image
 		text = pytesseract.image_to_string(cropped)
@@ -73,7 +73,7 @@ def turn_img_into_text(img):
 			
 		# # # Close the file
 		file.close	
-	return jsonfileName
+	return fileName
 
 
 
