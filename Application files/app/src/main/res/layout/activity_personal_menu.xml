@@ -15,9 +15,10 @@
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/btnSignOut"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.526"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.714" />
 
     <TextView
         android:id="@+id/textViewUsername"
@@ -25,13 +26,12 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/imgView_icon"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="40dp"
         android:layout_toRightOf="@id/imgView_icon"
         android:text="Username:"
         android:textAlignment="center"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/btnEditProfile"
-        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="@+id/btnEditProfile"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,10 +46,10 @@
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.549"
+        app:layout_constraintHorizontal_bias="0.153"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/textViewUsername"
-        app:layout_constraintVertical_bias="0.163" />
+        app:layout_constraintVertical_bias="0.212" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.24" />
+        app:layout_constraintGuide_percent="0.3" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recViewDocs"
@@ -81,9 +81,11 @@
         android:id="@+id/btnNewDoc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:text="NEW DOCUMENT"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSignOut"
         app:layout_constraintEnd_toEndOf="@+id/btnEditProfile"
+        app:layout_constraintHorizontal_bias="0.409"
         app:layout_constraintStart_toStartOf="@+id/btnEditProfile"
         app:layout_constraintTop_toBottomOf="@+id/btnEditProfile" />
 

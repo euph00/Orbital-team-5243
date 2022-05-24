@@ -37,6 +37,38 @@ public class MainActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
 
+    //ActivityResultLauncher is replacement for deprecated startActivityForResult method.
+    //Custom callback is defined in the anon inner class, no longer uses old default callback.
+    private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+
+            int rc = result.getResultCode();
+
+            if (rc == Activity.RESULT_OK) { //google sign in completed
+                Toast.makeText(MainActivity.this, "Google result OK", Toast.LENGTH_SHORT).show();
+                //retrieve result of external activity (google one touch activity)
+                Intent intent = result.getData();
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
+                try {
+                    //Google sign in was successful, authenticate with firebase
+                    GoogleSignInAccount account = task.getResult(ApiException.class);
+                    Toast.makeText(MainActivity.this, "Authenticate with firebase", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                    firebaseAuthWithGoogle(account.getIdToken());
+                } catch (ApiException e) {
+                    //Google sign in failed
+                    Toast.makeText(MainActivity.this, "Google sign in failed", Toast.LENGTH_LONG).show();
+                    Log.w(TAG, "Google sign in failed", e);
+                }
+            } else if (rc == Activity.RESULT_CANCELED) { //google sign in aborted
+                Toast.makeText(MainActivity.this, "Google Sign In cancelled.", Toast.LENGTH_LONG).show();
+            } else { //all other cases, refer to error code on screen
+                Toast.makeText(MainActivity.this, "Other error: " + rc, Toast.LENGTH_LONG).show();
+            }
+        }
+    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,39 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
         updateUI(currentUser);
     }
-
-    //ActivityResultLauncher is replacement for deprecated startActivityForResult method.
-    //Custom callback is defined in the anon inner class, no longer uses old default callback.
-    ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult result) {
-
-            int rc = result.getResultCode();
-
-            if (rc == Activity.RESULT_OK) { //google sign in completed
-                Toast.makeText(MainActivity.this, "Google result OK", Toast.LENGTH_SHORT).show();
-                //retrieve result of external activity (google one touch activity)
-                Intent intent = result.getData();
-                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
-                try {
-                    //Google sign in was successful, authenticate with firebase
-                    GoogleSignInAccount account = task.getResult(ApiException.class);
-                    Toast.makeText(MainActivity.this, "Authenticate with firebase", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                    firebaseAuthWithGoogle(account.getIdToken());
-                } catch (ApiException e) {
-                    //Google sign in failed
-                    Toast.makeText(MainActivity.this, "Google sign in failed", Toast.LENGTH_LONG).show();
-                    Log.w(TAG, "Google sign in failed", e);
-                }
-            } else if (rc == Activity.RESULT_CANCELED) { //google sign in aborted
-                Toast.makeText(MainActivity.this, "Google Sign In cancelled.", Toast.LENGTH_LONG).show();
-            } else { //all other cases, refer to error code on screen
-                Toast.makeText(MainActivity.this, "Other error: " + rc, Toast.LENGTH_LONG).show();
-            }
-        }
-
-    });
 
     //verify Google idToken for the user obtained from resultLauncher's callback with firebase
     private void firebaseAuthWithGoogle(String idToken) {

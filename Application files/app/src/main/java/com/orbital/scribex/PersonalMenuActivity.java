@@ -54,7 +54,6 @@ public class PersonalMenuActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         String idToken = intent.getStringExtra("idToken");
         Toast.makeText(this, idToken, Toast.LENGTH_LONG).show();
-        txtUsername.setText(idToken);
 
         //recyclerview test code
         adapter = new recViewDocsAdapter(this);
@@ -67,7 +66,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         docs.add(new Document(3, "document 3", "datetime", "text for document 3", "text for document 3"));
         docs.add(new Document(4, "document 4", "datetime", "text for document 4", "text for document 4"));
         docs.add(new Document(5, "document 5", "datetime", "text for document 5", "text for document 5"));
-        docs.add(new Document(6, "document 6", "datetime", "text for document 6", "text for document 6"));
+        docs.add(new Document(6, "document 6", "datetime", "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.", "text for document 6"));
 
         adapter.setDocs(docs);
     }

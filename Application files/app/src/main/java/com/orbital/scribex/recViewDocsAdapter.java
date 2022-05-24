@@ -1,6 +1,7 @@
 package com.orbital.scribex;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,9 @@ public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, docs.get(position).getName(), Toast.LENGTH_SHORT).show();
+                Intent viewDocumentIntent = new Intent(context, DocumentActivity.class);
+                viewDocumentIntent.putExtra("Document", docs.get(position));
+                context.startActivity(viewDocumentIntent);
             }
         });
     }
