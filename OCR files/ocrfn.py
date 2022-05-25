@@ -17,7 +17,7 @@ img = cv2.imread(r"C:\Users\User\Downloads\Capture1.png")
 
 
 def turn_img_into_text(img):
-
+	
 	fileName = str(uuid.uuid4())+".txt"
 	
 	# Convert the image to gray scale
