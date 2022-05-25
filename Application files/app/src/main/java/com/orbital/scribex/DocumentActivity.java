@@ -13,7 +13,7 @@ public class DocumentActivity extends AppCompatActivity {
     private Button btnDelete;
 
     private ImageView imgViewDocPreview;
-    
+
     private TextView txtName;
     private TextView txtDateCreated;
     private TextView txtDoc;
@@ -38,7 +38,7 @@ public class DocumentActivity extends AppCompatActivity {
         //TODO: set date time when available
         //TODO: implement delete button
 
-        txtName.setText("Document name: " + doc.getName());
+        txtName.setText(doc.getName());
 //        txtDateCreated.setText("Created on: " + doc.getDateTime());
         txtDoc.setText(doc.getText());
 

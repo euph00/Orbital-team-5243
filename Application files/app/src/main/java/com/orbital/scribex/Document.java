@@ -3,18 +3,28 @@ package com.orbital.scribex;
 import java.io.Serializable;
 
 public class Document implements Serializable {
+
+    private static final int SNIPPET_LENGTH = 30;
+
     private int id;
     private String name;
     private String dateTime;
     private String text;
     private String snippet;
 
-    public Document(int id, String name, String dateTime, String text, String snippet) {
+    /**
+     * Constructs a java object representing a scanned document.
+     * @param id    Unique ID representing the document's identity.
+     * @param name  Name of the document, as chosen by the user.
+     * @param dateTime  Date and time that the document was created.
+     * @param text  Scanned content of the document as pulled from FireBase.
+     */
+    public Document(int id, String name, String dateTime, String text) {
         this.id = id;
         this.name = name;
         this.dateTime = dateTime;
         this.text = text;
-        this.snippet = snippet;
+        this.snippet = text.substring(0, Math.min(text.length(), SNIPPET_LENGTH));
     }
 
     public void setId(int id) {

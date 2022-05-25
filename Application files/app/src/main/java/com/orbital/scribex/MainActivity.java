@@ -98,22 +98,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //Custom onStart routine to check for existing credentials
     @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser == null) {
-            //if signed out of firebase, sign out of google as well
-            mGoogleSignInClient.signOut();
-            Toast.makeText(this, "logged out", Toast.LENGTH_LONG).show();
-        }
-
         updateUI(currentUser);
     }
 
-    //verify Google idToken for the user obtained from resultLauncher's callback with firebase
+    /**
+     * Verifies the idToken provided by Google Authentication with FireBase.
+     * This method is called after Google Authentication is complete.
+     * @param idToken   idToken provided by Google auth client, mGoogleSignInClient
+     */
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
@@ -134,13 +130,20 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    //if user not null, login
+    /**
+     * Starts PersonalMenuActivity iff a registered user is currently logged in to FireBase.
+     * Else if FireBase user is null, log out of Google auth as well.
+     * @param user  FirebaseUser object from mAuth.getCurrentUser(). null if no user is currently logged in.
+     */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
             Intent menuIntent = new Intent(this, PersonalMenuActivity.class);
             menuIntent.putExtra("idToken", user.getUid());
             startActivity(menuIntent);
+        } else {
+            mGoogleSignInClient.signOut();
+            Toast.makeText(this, "logged out", Toast.LENGTH_LONG).show();
         }
     }
 

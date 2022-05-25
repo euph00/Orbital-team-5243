@@ -40,7 +40,7 @@ public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: Called");
         holder.name_doc.setText(docs.get(position).getName());
         //TODO: set document image when implemented
@@ -48,9 +48,10 @@ public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, docs.get(position).getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, docs.get(holder.getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
                 Intent viewDocumentIntent = new Intent(context, DocumentActivity.class);
-                viewDocumentIntent.putExtra("Document", docs.get(position));
+                //pass document object to DocumentActivity
+                viewDocumentIntent.putExtra("Document", docs.get(holder.getAdapterPosition()));
                 context.startActivity(viewDocumentIntent);
             }
         });
