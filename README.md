@@ -11,4 +11,3 @@ Application has currently been tested on both emulators running API levels 30 to
 1. Able to sign in/sign out of firebase using google authentication
 2. Able to take photos using camera and upload them to personal firebase directory
 3. Able to view dummy documents in a recyclerView
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
