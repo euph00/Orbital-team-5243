@@ -27,6 +27,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +37,37 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private GoogleSignInClient mGoogleSignInClient;
+
+    private FirebaseFirestore firestore;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //GSO object for configuring scope of requested info
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(getString(R.string.web_client_id))
+                .build();
+
+        //configure sign in client based on scope requested in GSO
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        //initialise firebase authorisation instance
+        mAuth = FirebaseAuth.getInstance();
+
+        //OnClickListener for sign in button
+        Button loginButton = findViewById(R.id.sign_in_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                resultLauncher.launch(new Intent(mGoogleSignInClient.getSignInIntent()));
+
+            }
+        });
+    }
 
     //ActivityResultLauncher is replacement for deprecated startActivityForResult method.
     //Custom callback is defined in the anon inner class, no longer uses old default callback.
@@ -70,35 +102,6 @@ public class MainActivity extends AppCompatActivity {
     });
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        //GSO object for configuring scope of requested info
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestIdToken(getString(R.string.web_client_id))
-                .build();
-
-        //configure sign in client based on scope requested in GSO
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        //initialise firebase authorisation instance
-        mAuth = FirebaseAuth.getInstance();
-
-        //OnClickListener for sign in button
-        Button loginButton = findViewById(R.id.sign_in_button);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                resultLauncher.launch(new Intent(mGoogleSignInClient.getSignInIntent()));
-
-            }
-        });
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -120,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            saveAppUser(new ScribexUser(user.getUid()));
                             updateUI(user);
                         } else {
                             Toast.makeText(MainActivity.this, "Firebase sign in failed", Toast.LENGTH_SHORT).show();
@@ -128,6 +132,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void saveAppUser(ScribexUser scribexUser) {
+        firestore = FirebaseFirestore.getInstance();
+        firestore.collection("users").document(scribexUser.getUid()).set(scribexUser);
     }
 
     /**
@@ -139,13 +148,12 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
             Intent menuIntent = new Intent(this, PersonalMenuActivity.class);
-            menuIntent.putExtra("idToken", user.getUid());
+            ScribexUser appUser = new ScribexUser(user.getUid());
+            menuIntent.putExtra("user", appUser);
             startActivity(menuIntent);
         } else {
             mGoogleSignInClient.signOut();
             Toast.makeText(this, "logged out", Toast.LENGTH_LONG).show();
         }
     }
-
-
 }
