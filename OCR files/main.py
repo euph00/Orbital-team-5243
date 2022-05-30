@@ -74,13 +74,14 @@ class File(object):
         return new_entries
             
 
+def main():
+    cred = credentials.Certificate("./keySX.json")
+    app = firebase_admin.initialize_app(cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
+    teststorage = FBStorage(cred, app, 'imgfiles.txt')
 
-cred = credentials.Certificate("./keySX.json")
-app = firebase_admin.initialize_app(cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
-teststorage = FBStorage(cred, app, 'imgfiles.txt')
+    # Test Cases for users:
+    teststorage.upload_result()
 
-# Test Cases for users:
-teststorage.upload_result()
-
-
+if __name__ == "__main__":
+    main()
 
