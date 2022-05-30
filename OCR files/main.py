@@ -8,14 +8,36 @@ import os
 
 
 class FBStorage(object):
-    def __init__(self, cred, app):
-        self.cred = cred
-        self.app = app   
-
-
-class File(FBStorage):
     def __init__(self, cred, app, manifest_name):
-        super().__init__(cred, app)
+        self.cred = cred
+        self.app = app
+        self.obj_file = File(manifest_name)
+
+    def upload_result(self):
+        #  Set up document reference in firestore database
+        doc = self.obj_file.doc_ref.get()
+        curr_doc = doc.to_dict()
+
+        update_len = len(self.obj_file.transcribe_imglst())
+        
+        if doc.exists:
+            curr_len = len(curr_doc)
+            keys = []
+            for i in range(curr_len+1,curr_len+update_len+1):
+                keys.append(str(i))
+            upload = dict(zip(keys, self.obj_file.transcribe_imglst()))
+            self.obj_file.doc_ref.update(upload)
+        else:
+            curr_len = 0
+            keys = []
+            for i in range(curr_len+1,curr_len+update_len+1):
+                keys.append(str(i))
+            upload = dict(zip(keys, self.obj_file.transcribe_imglst()))
+            self.obj_file.doc_ref.set(upload)
+
+
+class File(object):
+    def __init__(self, manifest_name):
         self.manifest_name = manifest_name
         self.bucket = storage.bucket()
         self.database = firestore.client()
@@ -50,40 +72,15 @@ class File(FBStorage):
             new_entries.append(url)
             os.remove(transcribedfilename)
         return new_entries
-
-
-    def upload_result(self):
-        #  Set up document reference in firestore database
-        doc = self.doc_ref.get()
-        curr_doc = doc.to_dict()
-
-        update_len = len(self.transcribe_imglst())
-        
-        if doc.exists:
-            curr_len = len(curr_doc)
-            keys = []
-            for i in range(curr_len+1,curr_len+update_len+1):
-                keys.append(str(i))
-            print(keys)
-            upload = dict(zip(keys, self.transcribe_imglst()))
-            self.doc_ref.update(upload)
-        else:
-            curr_len = 0
-            keys = []
-            for i in range(curr_len+1,curr_len+update_len+1):
-                keys.append(str(i))
-            upload = dict(zip(keys, self.transcribe_imglst()))
-            self.doc_ref.set(upload)
             
 
 
 cred = credentials.Certificate("./keySX.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
-testfile = File(cred, app, 'imgfiles.txt')
-testfile2 = File(cred, app, "imgfiles2.txt")
+teststorage = FBStorage(cred, app, 'imgfiles.txt')
 
-# Test Cases for two users:
-# testfile.upload_result()
-# testfile2.upload_result()
+# Test Cases for users:
+teststorage.upload_result()
+
 
 
