@@ -57,7 +57,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         btnNewDoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openUploadImagePage();
+                openUploadImageActivity();
             }
         });
 
@@ -82,7 +82,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         adapter.setDocs(docs);
     }
 
-    private void openUploadImagePage() {
+    private void openUploadImageActivity() {
         Intent uploadImageIntent = new Intent(PersonalMenuActivity.this, UploadImageActivity.class);
         uploadImageIntent.putExtra("user", appUser);
         startActivity(uploadImageIntent);

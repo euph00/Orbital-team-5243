@@ -96,8 +96,11 @@ public class UploadImageActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Tries to upload photos in the Collection photos to firebase storage. This method DOES NOT update firestore itself.
+     * Firestore updates are handled by UploadImageActivity::updatePhotoDatabase called in this method.
+     */
     private void upload() {
-
         //Guard clause: case where there is nothing to upload
         if (photos.isEmpty()) {
             Toast.makeText(this, "Please take a picture first", Toast.LENGTH_SHORT).show();
@@ -128,6 +131,10 @@ public class UploadImageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method is to be called by UploadImageActivity::upload. This handles updating of firestore database.
+     * @param photo Photo object that was just uploaded to firebase storage. remoteUri field should have been populated with uri of photo on firebase storage.
+     */
     private void updatePhotoDatabase(Photo photo) {
         CollectionReference uploadCollection = firestore.collection("users").document(appUser.getUid()).collection("uploads");
         Task<DocumentReference> handle = uploadCollection.add(photo);
@@ -145,6 +152,9 @@ public class UploadImageActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up the preliminary permissions for opening the camera and accessing storage. Requests permissions if not granted.
+     */
     private void takePhoto() {
         boolean camPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PERMISSION_GRANTED;
         boolean storePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED;
@@ -172,6 +182,9 @@ public class UploadImageActivity extends AppCompatActivity {
                 }
             });
 
+    /**
+     * On permission granted by UploadImageActivity::takePhoto, file destination created and camera opened.
+     */
     private void invokeCamera() {
         File file = createImageFile();
         try {
@@ -197,6 +210,10 @@ public class UploadImageActivity extends AppCompatActivity {
         }
     });
 
+    /**
+     * Writes the taken picture to storage.
+     * @return  File created by taking the photo and writing to storage. Get local URI from this object.
+     */
     private File createImageFile() {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File imageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);

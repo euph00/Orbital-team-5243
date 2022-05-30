@@ -134,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Creates user's directory on firestore.
+     * @param scribexUser new ScribexUser logging in.
+     */
     private void saveAppUser(ScribexUser scribexUser) {
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("users").document(scribexUser.getUid()).set(scribexUser);
