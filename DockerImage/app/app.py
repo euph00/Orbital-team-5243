@@ -8,6 +8,10 @@ import cv2
 import app.ocrfn as ocrfn
 import os
 
+app = FastAPI()
+
+@app.get("/app")
+
 class FBStorage(object):
     def __init__(self, cred, app, manifest_name):
         self.cred = cred
@@ -75,20 +79,30 @@ class File(object):
         return new_entries
             
 
-app = FastAPI()
+class App(object):
+    __instance = None
+    __inited = False
 
-@app.get("/app")
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
 
+    def __init__(self):
+        if type(self).__inited:
+            return
+        self.cred = credentials.Certificate('./app/keySX.json')
+        self.app = firebase_admin.initialize_app(self.cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
+        type(self).__inited = True
 
-def get_app():
-    cred = credentials.Certificate('./app/keySX.json')
-    app = firebase_admin.initialize_app(cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
-    teststorage = FBStorage(cred, app, 'imgfiles.txt')
+    def ping(self):
+        teststorage = FBStorage(self.cred, self.app, 'imgfiles.txt')
+        teststorage.upload_result()
 
-    # Test Cases for users:
-    teststorage.upload_result()
-    firebase_admin.delete_app(app)
+def main():
+    test_app = App()
+    test_app.ping()
 
 if __name__ == "__main__":
-    get_app()
+    main()
 
