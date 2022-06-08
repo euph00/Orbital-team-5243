@@ -8,9 +8,6 @@ import cv2
 import app.ocrfn as ocrfn
 import os
 
-app = FastAPI()
-
-@app.get("/app")
 
 class FBStorage(object):
     def __init__(self, cred, app, manifest_name):
@@ -80,7 +77,7 @@ class File(object):
         return new_entries
             
 
-class App(object):
+class FApp(object):
     __instance = None
     __inited = False
 
@@ -100,11 +97,12 @@ class App(object):
         teststorage = FBStorage(self.cred, self.app, 'imgfiles.txt')
         teststorage.upload_result()
 
-cred = credentials.Certificate('./app/keySX.json')
-Fapp = firebase_admin.initialize_app(cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
 
+app = FastAPI()
+
+@app.get("/app")
 def main():
-    test_app = App()
+    test_app = FApp()
     test_app.ping()
 
 if __name__ == "__main__":

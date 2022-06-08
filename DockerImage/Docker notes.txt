@@ -1,0 +1,21 @@
+https://www.youtube.com/watch?v=v36R-lwzUSI
+VM requirements (following the video):
+Boot disk: Ubuntu
+Disk size: 20GB
+Allow http & https traffic
+Allow full cloud API access
+N1 core with 15GB ram
+
+
+install docker for ubuntu on VM at: https://docs.docker.com/engine/install/ubuntu/
+
+git clone https://github.com/nyanyui/DockerImage.git
+(log in using personal access token)
+gcloud builds submit --config cloudbuild.yaml .
+gcloud auth configure-docker
+sudo docker run -p 80:80 gcr.io/orbital2022-2a195/ocrapp
+
+Troubleshooting:
+sudo docker image ls
+sudo docker image rm <image_code> -f
+sudo rm -r <filename>
