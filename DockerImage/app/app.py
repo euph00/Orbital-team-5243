@@ -5,9 +5,8 @@ from firebase_admin import credentials, storage
 from firebase_admin import firestore
 import numpy as np
 import cv2
-import ocrfn as ocrfn
+import app.ocrfn as ocrfn
 import os
-
 
 class FBStorage(object):
     def __init__(self, cred, app, manifest_name):
@@ -76,14 +75,20 @@ class File(object):
         return new_entries
             
 
-def main():
-    cred = credentials.Certificate("./keySX.json")
+app = FastAPI()
+
+@app.get("/app")
+
+
+def get_app():
+    cred = credentials.Certificate('./app/keySX.json')
     app = firebase_admin.initialize_app(cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
     teststorage = FBStorage(cred, app, 'imgfiles.txt')
 
     # Test Cases for users:
     teststorage.upload_result()
+    firebase_admin.delete_app(app)
 
 if __name__ == "__main__":
-    main()
+    get_app()
 

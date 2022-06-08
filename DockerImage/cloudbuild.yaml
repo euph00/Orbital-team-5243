@@ -1,0 +1,5 @@
+steps:
+- name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-t", "gcr.io/orbital2022-2a195/ocrapp", "."]
+- name: "gcr.io/cloud-builders/docker"
+  args: ["push", "gcr.io/orbital2022-2a195/ocrapp"]
