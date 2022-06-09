@@ -74,7 +74,7 @@ class File(object):
             os.remove(transcribedfilename)
         return new_entries
             
-
+#Singleton object representing connection to database
 class App(object):
     __instance = None
     __inited = False
