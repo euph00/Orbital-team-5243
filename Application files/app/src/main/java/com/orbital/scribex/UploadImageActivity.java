@@ -143,7 +143,17 @@ public class UploadImageActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentReference> task) {
                 if (task.isSuccessful()) {
                     photo.setId(task.getResult().getId());
-                    firestore.collection("users").document(appUser.getUid()).collection("uploads").document(photo.getId()).set(photo);
+                    firestore.collection("users")
+                            .document(appUser.getUid())
+                            .collection("uploads")
+                            .document(photo.getId())
+                            .set(photo);
+                    firestore.collection("users")
+                            .document(appUser.getUid())
+                            .collection("uploads")
+                            .document("QUEUE")
+                            .update(photo.getId(), photo.getRemoteUri());
+                    //TODO: ping backend
                     Toast.makeText(UploadImageActivity.this, "Upload image success.", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "error updating photo data");
