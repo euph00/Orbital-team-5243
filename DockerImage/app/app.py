@@ -10,10 +10,8 @@ import os
 
 
 class FBStorage(object):
-    def __init__(self, cred, app, manifest_name):
-        self.cred = cred
-        self.app = app
-        self.obj_file = File(manifest_name)
+    def __init__(self, userid):
+        self.obj_file = File(userid)
 
     def upload_result(self):
         #  Set up document reference in firestore database
@@ -41,8 +39,8 @@ class FBStorage(object):
 
 
 class File(object):
-    def __init__(self, manifest_name):
-        self.manifest_name = manifest_name
+    def __init__(self, userid):
+        self.userid = userid
         self.bucket = storage.bucket()
         self.database = firestore.client()
         self.doc_ref = self.database.collection(self.get_userid()+"/archived document/transcribed documents").document("transcribed")
@@ -54,7 +52,7 @@ class File(object):
     
     def get_userid(self):
         #  Currently the userid is the first row of the manifest file
-        return self.get_imagelist()[0]
+        return self.userid
 
     def transcribe_imglst(self):
         new_entries = []
@@ -77,7 +75,7 @@ class File(object):
         return new_entries
             
 
-class FApp(object):
+class App(object):
     __instance = None
     __inited = False
 
@@ -93,17 +91,14 @@ class FApp(object):
         self.app = firebase_admin.initialize_app(self.cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
         type(self).__inited = True
 
-    def ping(self):
-        teststorage = FBStorage(self.cred, self.app, 'imgfiles.txt')
-        teststorage.upload_result()
-
 
 app = FastAPI()
 
-@app.get("/app")
+@app.get("/app/{userid}")
 def main():
-    test_app = FApp()
-    test_app.ping()
+    test_app = App()
+    test_storage = FBStorage(userid)
+    test_storage.upload_result()
 
 if __name__ == "__main__":
     main()
