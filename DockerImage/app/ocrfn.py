@@ -5,7 +5,6 @@
 # Import required packages
 import cv2
 import pytesseract
-import uuid
 
 # # Mention the installed location of Tesseract-OCR in your system
 # pytesseract.pytesseract.tesseract_cmd = r'.\app\Tesseract-OCR\tesseract.exe'
@@ -13,9 +12,9 @@ import uuid
 
 
 
-def turn_img_into_text(img):
+def turn_img_into_text(img, key):
 	
-	fileName = str(uuid.uuid4())+".txt"
+	fileName = key+".txt"
 	
 	# Convert the image to gray scale
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

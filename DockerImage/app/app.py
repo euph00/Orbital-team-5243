@@ -7,35 +7,52 @@ import numpy as np
 import cv2
 import app.ocrfn as ocrfn
 import os
+import urllib.request
+
+import pyrebase
+
+config = {
+    "apiKey": "AIzaSyAAXXwocAH6k5TSn8XvDpEI-LQpXV4-95E",
+    "authDomain": "scribex-1653106340524.firebaseapp.com",
+    "databaseURL": "https://scribex-1653106340524-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "projectId": "scribex-1653106340524",
+    "storageBucket": "scribex-1653106340524.appspot.com",
+    "serviceAccount": "./app/keySX.json"
+}
+
+
 
 
 class FBStorage(object):
     def __init__(self, userid):
         self.obj_file = File(userid)
+        self.obj_app = App()
+        self.storage = self.obj_app.firebase_storage.storage()
+    
+    def upload__file(self, transcribedfile):
+        #  Upload result txt file into firebase storage
+        self.storage.child("transcribed/"+self.obj_file.get_userid()+"/"+transcribedfile).put(transcribedfile)
+    
 
-    def upload_result(self):
-        #  Set up document reference in firestore database
-        doc = self.obj_file.doc_ref.get()
-        curr_doc = doc.to_dict()
+    def update_database(self, key):
+        data = {"id": key}
+        return self.obj_file.col_ref.document(key).set(data)
 
-        imglst = self.obj_file.transcribe_imglst()
+    def transcribe_QUEUE(self):
+        imgdict = self.obj_file.get_QUEUE()
+        keylst = imgdict.keys()
 
-        update_len = len(imglst)
-        
-        if doc.exists:
-            curr_len = len(curr_doc)
-            keys = []
-            for i in range(curr_len+1,curr_len+update_len+1):
-                keys.append(str(i))
-            upload = dict(zip(keys, imglst))
-            self.obj_file.doc_ref.update(upload)
-        else:
-            curr_len = 0
-            keys = []
-            for i in range(curr_len+1,curr_len+update_len+1):
-                keys.append(str(i))
-            upload = dict(zip(keys, imglst))
-            self.obj_file.doc_ref.set(upload)
+        for key in keylst:
+            imgurl = imgdict[key]
+            image = self.obj_file.get_img(imgurl)
+
+            #  Transcribe
+            transcribedfile = ocrfn.turn_img_into_text(image, key)
+            #  Upload file to Firebase storage
+            self.upload__file(transcribedfile)
+            #  Update firestore datatbase
+            self.update_database(key)
+            os.remove(transcribedfile)
 
 
 class File(object):
@@ -43,36 +60,26 @@ class File(object):
         self.userid = userid
         self.bucket = storage.bucket()
         self.database = firestore.client()
-        self.doc_ref = self.database.collection(self.get_userid()+"/archived document/transcribed documents").document("transcribed")
-
-    def get_imagelist(self):
-        manifestblob = self.bucket.blob(self.manifest_name)
-        imagestr = manifestblob.download_as_text()
-        return imagestr.split("\r\n")
+        self.col_ref = self.database.collection("users/"+self.get_userid()+"/transcribed")
+        self.queue = self.database.collection("users/"+self.get_userid()+"/uploads").document("QUEUE")
     
+    def get_QUEUE(self):
+        queuelst = self.queue.get()
+        imagedict = queuelst.to_dict()
+        return imagedict
+
     def get_userid(self):
-        #  Currently the userid is the first row of the manifest file
         return self.userid
 
-    def transcribe_imglst(self):
-        new_entries = []
+    def get_img(self, imgurl):
+        #  Retrieve image from firebase storage via url
+        with urllib.request.urlopen(imgurl) as resp:
+            # read image as an numpy array
+            im = np.asarray(bytearray(resp.read()), dtype="uint8")
+            # use imdecode function
+            img = cv2.imdecode(im, cv2.COLOR_BGR2BGR555)
+        return img
 
-        for image in self.get_imagelist()[1:]:
-            #   Retrieve image from firebase storage and converting it into a image object for ocr
-            blob = self.bucket.get_blob(image)
-            arr = np.frombuffer(blob.download_as_string(), np.uint8)
-            Timage = cv2.imdecode(arr,cv2.COLOR_BGR2BGR555)
-            
-            #  Transcribe
-            transcribedfilename = ocrfn.turn_img_into_text(Timage)
-            #  Upload result txt file into firebase storage
-            outputblob = self.bucket.blob(transcribedfilename)
-            outputblob.upload_from_string(transcribedfilename)
-            #  Get url of uploaded file to be saved to firestore database
-            url = outputblob._get_download_url(transcribedfilename)
-            new_entries.append(url)
-            os.remove(transcribedfilename)
-        return new_entries
             
 #Singleton object representing connection to database
 class App(object):
@@ -89,17 +96,18 @@ class App(object):
             return
         self.cred = credentials.Certificate('./app/keySX.json')
         self.app = firebase_admin.initialize_app(self.cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
+        self.firebase_storage = pyrebase.initialize_app(config)
         type(self).__inited = True
 
 
 app = FastAPI()
 
 @app.get("/app/{userid}")
-def main():
-    test_app = App()
-    test_storage = FBStorage(userid)
-    test_storage.upload_result()
+def main(userid):
+    app_instance = App()
+    storage_instance = FBStorage(userid)
+    storage_instance.transcribe_QUEUE()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main("lc6h9J5fkif0iDaGUxZe6IJ6Bq53")
 
