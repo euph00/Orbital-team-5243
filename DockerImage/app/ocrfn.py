@@ -1,76 +1,46 @@
-##############################################################
-#Preliminary boiler plate code with pretrained model from GFG#
-##############################################################
-
-# Import required packages
-import cv2
 import pytesseract
+from pytesseract import Output
+import cv2
 
-# # Mention the installed location of Tesseract-OCR in your system
-# pytesseract.pytesseract.tesseract_cmd = r'.\app\Tesseract-OCR\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
 
-
-def turn_img_into_text(img, key):
-	
-	fileName = key+".txt"
-	
-	# Convert the image to gray scale
-	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-	# Performing OTSU threshold
-	ret, thresh1 = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
-
-	# Specify structure shape and kernel size.
-	# Kernel size increases or decreases the area
-	# of the rectangle to be detected.
-	# A smaller value like (10, 10) will detect
-	# each word instead of a sentence.
-	rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (18, 18))
-
-	# Applying dilation on the threshold image
-	dilation = cv2.dilate(thresh1, rect_kernel, iterations = 1)
-
-	# Finding contours
-	contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
-	# Creating a copy of image
-	im2 = img.copy()
-
-	# A text file is created and flushed
-	file = open(fileName, "w+")
-	file.write("")
-	file.close()
-
-	# Looping through the identified contours
-	# Then rectangular part is cropped and passed on
-	# to pytesseract for extracting text from it
-	# Extracted text is then written into the text file
+def turn_img_into_txt(img, key):
 	output = []
-	for cnt in contours:
-		x, y, w, h = cv2.boundingRect(cnt)
-			
-		# Drawing a rectangle on copied image
-		rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-			
-		# Cropping the text block for giving input to OCR
-		cropped = im2[y:y + h, x:x + w]
-			
-		# Open the file in append mode
-		file = open(fileName, "a")
-			
-		# Apply OCR on the cropped image
-		text = pytesseract.image_to_string(cropped)
-		output.append(text)
-		# # Appending the text into file
-		file.write(text)
-		file.write("\n")
-			
-		# # # Close the file
-		file.close	
-	return fileName
+	filename = key+".txt"
+	# load the input image, convert it from BGR to RGB channel ordering,
+	# and use Tesseract to localize each area of text in the input image
+	# image = cv2.imread(img)
+	rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+	results = pytesseract.image_to_data(rgb, output_type=Output.DICT)
+	
 
+	# loop over each of the individual text localizations
+	for i in range(0, len(results["text"])):
+		# extract the OCR text itself along with the confidence of the
+		# text localization
+		text = results["text"][i]
 
+		conf = int(float(results["conf"][i]))
+		# filter out weak confidence text localizations
+		if conf > 0.5:
+			text = "".join([c if ord(c) < 128 else "" for c in text]).strip()
+			output.append(text+" ")
+	output = ''.join(output)
 
-		
+	# A text file is created
+	file = open(filename, "w+")
+	# Appending the text into file
+	file.write(output)
+	file.close()
+	return filename
+
+def test_ocr(key):
+	filename = key+".txt"
+	# A text file is created
+	file = open(filename, "w+")
+	# Appending the text into file
+	file.write(key)
+	file.close()
+	return filename

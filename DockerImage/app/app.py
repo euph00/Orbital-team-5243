@@ -4,12 +4,9 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from firebase_admin import firestore
 import numpy as np
-import cv2
-# import app.ocrfn as ocrfn
-import ocrfn2 as ocrfn
+import app.ocrfn as ocrfn
 import os
 import urllib.request
-
 import pyrebase
 
 config = {
@@ -33,6 +30,7 @@ class FBStorage(object):
     def upload__file(self, transcribedfile):
         #  Upload result txt file into firebase storage
         self.storage.child("transcribed/"+self.obj_file.get_userid()+"/"+transcribedfile).put(transcribedfile)
+        os.remove(transcribedfile)
     
 
     def update_database(self, key):
@@ -48,12 +46,11 @@ class FBStorage(object):
             image = self.obj_file.get_img(imgurl)
 
             #  Transcribe
-            transcribedfile = ocrfn.turn_img_into_text(image, key)
+            transcribedfile = ocrfn.test_ocr(key)
             #  Upload file to Firebase storage
             self.upload__file(transcribedfile)
             #  Update firestore datatbase
             self.update_database(key)
-            os.remove(transcribedfile)
 
 
 class File(object):
@@ -72,14 +69,15 @@ class File(object):
     def get_userid(self):
         return self.userid
 
+
     def get_img(self, imgurl):
         #  Retrieve image from firebase storage via url
         with urllib.request.urlopen(imgurl) as resp:
-            # read image as an numpy array
+            # # read image as an numpy array
             im = np.asarray(bytearray(resp.read()), dtype="uint8")
-            # use imdecode function
-            img = cv2.imdecode(im, cv2.COLOR_BGR2BGR555)
-        return resp
+            # # use imdecode function
+            # img = cv2.imdecode(im, cv2.COLOR_BGR2RGB)
+        return im
 
             
 #Singleton object representing connection to database
@@ -109,6 +107,6 @@ def main(userid):
     storage_instance = FBStorage(userid)
     storage_instance.transcribe_QUEUE()
 
-# if __name__ == "__main__":
-#     main("lc6h9J5fkif0iDaGUxZe6IJ6Bq53")
+if __name__ == "__main__":
+    main("lc6h9J5fkif0iDaGUxZe6IJ6Bq53")
 
