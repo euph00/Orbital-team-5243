@@ -5,7 +5,8 @@ from firebase_admin import credentials, storage
 from firebase_admin import firestore
 import numpy as np
 import cv2
-import app.ocrfn as ocrfn
+# import app.ocrfn as ocrfn
+import ocrfn2 as ocrfn
 import os
 import urllib.request
 
@@ -78,7 +79,7 @@ class File(object):
             im = np.asarray(bytearray(resp.read()), dtype="uint8")
             # use imdecode function
             img = cv2.imdecode(im, cv2.COLOR_BGR2BGR555)
-        return img
+        return resp
 
             
 #Singleton object representing connection to database

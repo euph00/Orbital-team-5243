@@ -5,7 +5,7 @@ import imutils
 import cv2
 
 BAL_LABELS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt"
-IMG_PATH = "resources\qbf.jpeg"
+IMG_PATH = "resources\handwriting.jpeg"
 
 print("[INFO] loading model")
 model = load_model("models\model.h5")
