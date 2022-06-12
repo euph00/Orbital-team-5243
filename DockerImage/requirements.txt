@@ -1,9 +1,8 @@
 firebase_admin==5.2.0
 numpy==1.21.6
 opencv-python-headless
-pytesseract
 uvicorn
 fastapi
 pyrebase4
-requests
 urllib3
+google-cloud-vision

@@ -4,10 +4,11 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from firebase_admin import firestore
 import numpy as np
-import app.ocrfn as ocrfn
 import os
 import urllib.request
 import pyrebase
+from google.cloud import vision_v1
+
 
 config = {
     "apiKey": "AIzaSyAAXXwocAH6k5TSn8XvDpEI-LQpXV4-95E",
@@ -35,6 +36,7 @@ class FBStorage(object):
 
     def update_database(self, key):
         data = {"id": key}
+        # Add  fields into specified document in firestore database
         return self.obj_file.col_ref.document(key).set(data)
 
     def transcribe_QUEUE(self):
@@ -43,14 +45,15 @@ class FBStorage(object):
 
         for key in keylst:
             imgurl = imgdict[key]
-            image = self.obj_file.get_img(imgurl)
+            bytes = self.obj_file.get_img(imgurl)
 
             #  Transcribe
-            transcribedfile = ocrfn.test_ocr(key)
+            transcribedfile = self.obj_app.ocrfn(key, bytes)
             #  Upload file to Firebase storage
             self.upload__file(transcribedfile)
             #  Update firestore datatbase
             self.update_database(key)
+            
 
 
 class File(object):
@@ -73,11 +76,11 @@ class File(object):
     def get_img(self, imgurl):
         #  Retrieve image from firebase storage via url
         with urllib.request.urlopen(imgurl) as resp:
-            # # read image as an numpy array
+            # read image as an numpy array
             im = np.asarray(bytearray(resp.read()), dtype="uint8")
-            # # use imdecode function
-            # img = cv2.imdecode(im, cv2.COLOR_BGR2RGB)
-        return im
+            #  convert nparray to bytes for google cloud vision to construct image
+            byte = im.tobytes()
+        return byte
 
             
 #Singleton object representing connection to database
@@ -96,7 +99,30 @@ class App(object):
         self.cred = credentials.Certificate('./app/keySX.json')
         self.app = firebase_admin.initialize_app(self.cred, {'storageBucket' : 'scribex-1653106340524.appspot.com'})
         self.firebase_storage = pyrebase.initialize_app(config)
+        self.env = os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'./app/keySX.json'
+        self.client = vision_v1.ImageAnnotatorClient()
         type(self).__inited = True
+
+    def googlevision(self, bytes):
+        image = vision_v1.types.Image(content=bytes)
+        resp = self.client.document_text_detection(image)
+        text = resp.full_text_annotation.text
+        return text
+
+    def newtxtfile(self, key, text):
+        filename = key+".txt"
+        # A text file is created
+        file = open(filename, "w+")
+        # Appending the text into file
+        file.write(text)
+        file.close()
+        return filename
+
+    def ocrfn(self, key, bytes):
+        text = self.googlevision(bytes)
+        filename = self.newtxtfile(key, text)
+        return filename
+
 
 
 app = FastAPI()
@@ -107,6 +133,11 @@ def main(userid):
     storage_instance = FBStorage(userid)
     storage_instance.transcribe_QUEUE()
 
+
 if __name__ == "__main__":
     main("lc6h9J5fkif0iDaGUxZe6IJ6Bq53")
+
+
+
+
 
