@@ -119,11 +119,28 @@ class App(object):
         return filename
 
     def ocrfn(self, key, bytes):
-        text = self.googlevision(bytes)
+        resp = self.googlevision(bytes)
+        text = self.confidence_filter(resp)
         filename = self.newtxtfile(key, text)
         return filename
 
+    def confidence_filter(self, resp):
+        output = []
+        for page in resp.full_text_annotation.pages:
+            for block in page.blocks:
+                print('\nBlock confidence: {}\n'.format(block.confidence))
 
+                for paragraph in block.paragraphs:
+                    if paragraph.confidence < 0.4:
+                        continue
+
+                    for word in paragraph.words:
+                        if paragraph.confidence < 0.4:
+                            continue
+                        else:
+                            output.append(''.join([symbol.text for symbol in word.symbols]))             
+                        # for symbol in word.symbols:
+        return ''.join(output)
 
 app = FastAPI()
 
