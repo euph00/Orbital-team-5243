@@ -8,6 +8,7 @@ import os
 import urllib.request
 import pyrebase
 from google.cloud import vision_v1
+import string
 
 
 config = {
@@ -19,7 +20,9 @@ config = {
     "serviceAccount": "./app/keySX.json"
 }
 
-
+SPACE_BEFORE = [ '(', '[', '{']
+SPACE_AFTER =  ['!', ')', ',', '.', ':', ';', '?', ']', '}', '%']
+SPACE_BOTH = ['"', "'"]
 
 
 class FBStorage(object):
@@ -132,14 +135,34 @@ class App(object):
                         continue
 
                     for word in paragraph.words:
-                        if paragraph.confidence < 0.5:
+                        if word.confidence < 0.5:
                             continue
                         else:
-                            output.append(''.join([symbol.text for symbol in word.symbols]))
-                            output.append(' ')
+                            #  filter out words that are not ascii symbols
+                            word = ''.join([symbol.text for symbol in word.symbols if ord(symbol.text) < 128])
+                            self.word_filter(word, output)
                     output.append("\n")            
                         # for symbol in word.symbols:
         return ''.join(output)
+
+    def word_filter(self, word, output):
+        if word in string.punctuation and output:
+            if word in SPACE_BEFORE:
+                output.append(word)
+            elif word in SPACE_AFTER:
+                if output[-1] == " ":
+                    output.pop()
+                output.append(word)
+                output.append(' ')
+            elif word in SPACE_BOTH:
+                output.append(word)
+                output.append(' ')
+            else:
+                output.pop()
+                output.append(word)
+        else:
+            output.append(word)
+            output.append(' ')
 
 app = FastAPI()
 
