@@ -106,8 +106,7 @@ class App(object):
     def googlevision(self, bytes):
         image = vision_v1.types.Image(content=bytes)
         resp = self.client.document_text_detection(image)
-        text = resp.full_text_annotation.text
-        return text
+        return resp
 
     def newtxtfile(self, key, text):
         filename = key+".txt"
@@ -128,17 +127,17 @@ class App(object):
         output = []
         for page in resp.full_text_annotation.pages:
             for block in page.blocks:
-                print('\nBlock confidence: {}\n'.format(block.confidence))
-
                 for paragraph in block.paragraphs:
-                    if paragraph.confidence < 0.4:
+                    if paragraph.confidence < 0.5:
                         continue
 
                     for word in paragraph.words:
-                        if paragraph.confidence < 0.4:
+                        if paragraph.confidence < 0.5:
                             continue
                         else:
-                            output.append(''.join([symbol.text for symbol in word.symbols]))             
+                            output.append(''.join([symbol.text for symbol in word.symbols]))
+                            output.append(' ')
+                    output.append("\n")            
                         # for symbol in word.symbols:
         return ''.join(output)
 
