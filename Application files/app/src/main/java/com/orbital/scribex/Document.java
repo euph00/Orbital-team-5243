@@ -6,7 +6,7 @@ public class Document implements Serializable {
 
     private static final int SNIPPET_LENGTH = 30;
 
-    private int id;
+    private String id;
     private String name;
     private String dateTime;
     private String text;
@@ -19,7 +19,7 @@ public class Document implements Serializable {
      * @param dateTime  Date and time that the document was created.
      * @param text  Scanned content of the document as pulled from FireBase.
      */
-    public Document(int id, String name, String dateTime, String text) {
+    public Document(String id, String name, String dateTime, String text) {
         this.id = id;
         this.name = name;
         this.dateTime = dateTime;
@@ -27,7 +27,7 @@ public class Document implements Serializable {
         this.snippet = text.substring(0, Math.min(text.length(), SNIPPET_LENGTH));
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class Document implements Serializable {
         this.snippet = snippet;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

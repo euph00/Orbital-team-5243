@@ -1,22 +1,42 @@
 package com.orbital.scribex;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class PersonalMenuActivity extends AppCompatActivity {
 
@@ -33,10 +53,16 @@ public class PersonalMenuActivity extends AppCompatActivity {
     private Button btnEditProfile;
     private Button btnSignOut;
 
+    private FirebaseFirestore firestore;
+    private FirebaseStorage firebaseStorage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_menu);
+
+        firestore = FirebaseFirestore.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
 
         //init view elements
         recViewDocs = findViewById(R.id.recViewDocs);
@@ -72,14 +98,63 @@ public class PersonalMenuActivity extends AppCompatActivity {
         recViewDocs.setLayoutManager(new LinearLayoutManager(this));
 
         List<Document> docs = new ArrayList<>(); //TODO: pull from firebase when set up
-        docs.add(new Document(1, "document 1", "datetime", "text for document 1"));
-        docs.add(new Document(2, "document 2", "datetime", "text for document 2"));
-        docs.add(new Document(3, "document 3", "datetime", "text for document 3"));
-        docs.add(new Document(4, "document 4", "datetime", "text for document 4"));
-        docs.add(new Document(5, "document 5", "datetime", "text for document 5"));
-        docs.add(new Document(6, "document 6", "datetime", "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains."));
+        firestore.collection("users")
+                .document(appUser.getUid())
+                .collection("transcribed")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.w(TAG, "Listen failed", error);
+                            return;
+                        }
+                        docs.clear();
+                        for (QueryDocumentSnapshot doc : value) {
+                            processQuery(doc, docs);
+                        }
+                        Log.d(TAG, "Done with docs, size is " + String.valueOf(docs.size()));
 
-        adapter.setDocs(docs);
+                        Log.d(TAG, "update docs success refresh");
+                    }
+                });
+    }
+
+    private void processQuery(QueryDocumentSnapshot doc, List<Document> docs) {
+        String name = doc.getId();
+        StorageReference ref = firebaseStorage
+                .getReferenceFromUrl("gs://scribex-1653106340524.appspot.com")
+                .child(String.format("/transcribed/%s/%s", appUser.getUid(), name+".txt"));
+        try {
+            final File localFile = File.createTempFile(name, "txt");
+            ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    docs.add(new Document(name, name, null, readFile(localFile)));
+                    Log.d(TAG, String.valueOf(docs.size()));
+                    localFile.delete();
+                    adapter.setDocs(docs);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getLocalizedMessage());
+                }
+            });
+        } catch (IOException e) {
+            Log.e(TAG, e.getLocalizedMessage());
+        }
+    }
+
+    private String readFile(File file) {
+        try {
+            Scanner sc = new Scanner(file);
+            StringBuffer sb = new StringBuffer();
+            while (sc.hasNextLine()) sb.append(sc.nextLine());
+            return sb.toString();
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getLocalizedMessage());
+            return null;
+        }
     }
 
     private void openUploadImageActivity() {
