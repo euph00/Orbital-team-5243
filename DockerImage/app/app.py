@@ -22,8 +22,7 @@ config = {
 
 SPACE_BEFORE = [ '(', '[', '{']
 SPACE_AFTER =  ['!', ')', ',', '.', ':', ';', '?', ']', '}', '%']
-SPACE_BOTH = ['"', "'"]
-
+SPACE_BOTH = ["\'", "\""]
 
 class FBStorage(object):
     def __init__(self, userid):
