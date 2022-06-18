@@ -11,6 +11,7 @@ public class Photo {
     private Uri remoteUri;
     private Date dateTaken;
     private String id;
+    private String name;
 
     /**
      * Creates an abstraction of a Photo taken by the user.
@@ -19,11 +20,12 @@ public class Photo {
      * @param dateTaken initialised by calling Date::new when Photo object is created
      * @param id    id assigned by firebase firestore. Assigned automatically by UploadImageActivity::UpdatePhotoDatabase when firestore is updated.
      */
-    Photo(Uri localUri, Uri remoteUri, Date dateTaken, String id) {
+    Photo(Uri localUri, Uri remoteUri, Date dateTaken, String id, String name) {
         this.localUri = localUri;
         this.remoteUri = remoteUri;
         this.dateTaken = dateTaken;
         this.id = id;
+        this.name = name;
     }
 
     public Uri getLocalUri() {
@@ -56,5 +58,13 @@ public class Photo {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

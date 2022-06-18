@@ -39,7 +39,6 @@ public class DocumentActivity extends AppCompatActivity {
         //TODO: implement delete button
 
         txtName.setText(doc.getName());
-//        txtDateCreated.setText("Created on: " + doc.getDateTime());
         txtDoc.setText(doc.getText());
 
     }

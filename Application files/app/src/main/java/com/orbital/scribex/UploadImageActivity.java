@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +31,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -64,6 +67,7 @@ public class UploadImageActivity extends AppCompatActivity {
     private Button btnTakePic;
     private Button btnUpload;
     private ImageView imageViewDoc;
+    private TextView textViewWarning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,7 @@ public class UploadImageActivity extends AppCompatActivity {
         btnTakePic = findViewById(R.id.btnTakePic);
         btnUpload = findViewById(R.id.btnUpload);
         imageViewDoc = findViewById(R.id.imageViewDoc);
+        textViewWarning = findViewById(R.id.textViewWarning);
 
         btnTakePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,11 +100,32 @@ public class UploadImageActivity extends AppCompatActivity {
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                upload();
+                String newDocName = editTextDocName.getText().toString();
+                firestore.collection("users")
+                        .document(appUser.getUid())
+                        .collection("uploads")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    QuerySnapshot docs = task.getResult();
+                                    for (QueryDocumentSnapshot doc : docs) {
+                                        if (doc.getId().equals(newDocName)) {
+                                            showWarningNameCollision();
+                                            return; //TODO: implement name collision check, only begin upload process after no collision confirmed
+                                        }
+                                    }
+                                    upload();
+                                }
+                            }
+                        });
             }
         });
+    }
 
-
+    private void showWarningNameCollision() {
+        textViewWarning.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -149,16 +175,18 @@ public class UploadImageActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentReference> task) {
                 if (task.isSuccessful()) {
                     photo.setId(task.getResult().getId());
+                    String name = editTextDocName.getText().toString();
+                    photo.setName(name);
                     firestore.collection("users")
                             .document(appUser.getUid())
                             .collection("uploads")
-                            .document(photo.getId())
+                            .document(photo.getName())//TODO: replace document name with photo's name after implementing collision check
                             .set(photo);
                     firestore.collection("users")
                             .document(appUser.getUid())
                             .collection("uploads")
                             .document("QUEUE")
-                            .update(photo.getId(), photo.getRemoteUri());
+                            .update(photo.getName(), photo.getRemoteUri());
                     String url = appUser.getUid();
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     Handler handler = new Handler(Looper.getMainLooper());
@@ -225,7 +253,7 @@ public class UploadImageActivity extends AppCompatActivity {
             if (result) {
                 imageViewDoc.setImageURI(uri); //TODO: figure out why there is whitespace above and below image in the scrollview
                 Log.i(TAG, "Image saved to: " + uri);
-                Photo photo = new Photo(uri, null, new Date(), null);
+                Photo photo = new Photo(uri, null, new Date(), null, null);
                 photos.clear();//TODO: photos is cleared every time because we are only doing 1 photo each time for MS1. Reimplement for later.
                 photos.add(photo);
             } else {
