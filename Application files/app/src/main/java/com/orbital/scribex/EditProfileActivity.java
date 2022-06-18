@@ -1,8 +1,5 @@
 package com.orbital.scribex;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,25 +7,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "EditProfileActivity";
 
     private ScribexUser appUser;
+    private FirebaseUser user;
 
     private FirebaseFirestore firestore;
     private StorageReference storageReference;
@@ -47,6 +45,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         //init view elements
         this.imgViewProfilePic = findViewById(R.id.imgViewProfilePic);
@@ -57,56 +56,45 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
 
-        //check current username from firebase
-        firestore.collection("users")
-                .document(appUser.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot doc = task.getResult();
-                            if (doc.exists()) {
-                                Map<String, Object> map = doc.getData();
-                                if (map != null && map.containsKey("name")) {
-                                    editTextUserName.setText(doc.getString("name"));
-                                } else {
-                                    editTextUserName.setText("");
-                                    editTextUserName.setHint("input username");
-                                }
-                            } else {
-                                Log.d(TAG, "no such user?? " + appUser.getUid());
-                            }
-                        } else {
-                            Log.d(TAG, "get failed, " + task.getException());
-                        }
-                    }
-                });
+        //check and set current username from firebase
+        if (user != null) {
+            String name = user.getDisplayName();
+            if (name != null) editTextUserName.setText(name);
+            else {
+                editTextUserName.setText("");
+                editTextUserName.setHint("enter a username");
+            }
+        }
 
         //OnClickListeners
         buttonApplyChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String newUsername = editTextUserName.getText().toString();
-                updateProfile("name", newUsername);
-                openPersonalMenuActivity();
+                updateProfileName(newUsername);
+            }
+        });
+
+        buttonDeleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAccount();
             }
         });
     }
 
-    private void updateProfile(String field, String input) {
-        DocumentReference ref = firestore.collection("users").document(appUser.getUid());
-        Map<String,String> data = new HashMap<String,String>();
-        data.put(field, input);
-        ref.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void updateProfileName(String input) {
+        UserProfileChangeRequest nameUpdate = new UserProfileChangeRequest.Builder()
+                .setDisplayName(input)
+                .build();
+        user.updateProfile(nameUpdate)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onSuccess(Void unused) {
-                Log.d(TAG, "updated " + field + ": " + input);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "error writing to profile", e);
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "user name updated");
+                    openPersonalMenuActivity();
+                }
             }
         });
     }
@@ -115,5 +103,27 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent personalMenuActivityIntent = new Intent(EditProfileActivity.this, PersonalMenuActivity.class);
         personalMenuActivityIntent.putExtra("user", appUser);
         startActivity(personalMenuActivityIntent);
+    }
+
+    private void deleteAccount() {
+        if (user != null) {
+            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "User account deleted");
+                        Toast.makeText(EditProfileActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
+                        openMainActivity();
+                    } else {
+                        Log.e(TAG, "Failed to delete account", task.getException());
+                    }
+                }
+            });
+        }
+    }
+
+    private void openMainActivity() {
+        Intent mainActivityIntent = new Intent(EditProfileActivity.this, MainActivity.class);
+        startActivity(mainActivityIntent);
     }
 }

@@ -78,25 +78,25 @@ public class MainActivity extends AppCompatActivity {
             int rc = result.getResultCode();
 
             if (rc == Activity.RESULT_OK) { //google sign in completed
-                Toast.makeText(MainActivity.this, "Google result OK", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Google result OK", Toast.LENGTH_SHORT).show();
                 //retrieve result of external activity (google one touch activity)
                 Intent intent = result.getData();
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
                 try {
                     //Google sign in was successful, authenticate with firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
-                    Toast.makeText(MainActivity.this, "Authenticate with firebase", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "Authenticate with firebase", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
                     //Google sign in failed
-                    Toast.makeText(MainActivity.this, "Google sign in failed", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(MainActivity.this, "Google sign in failed", Toast.LENGTH_LONG).show();
                     Log.w(TAG, "Google sign in failed", e);
                 }
             } else if (rc == Activity.RESULT_CANCELED) { //google sign in aborted
                 Toast.makeText(MainActivity.this, "Google Sign In cancelled.", Toast.LENGTH_LONG).show();
             } else { //all other cases, refer to error code on screen
-                Toast.makeText(MainActivity.this, "Other error: " + rc, Toast.LENGTH_LONG).show();
+//                Toast.makeText(MainActivity.this, "Other error: " + rc, Toast.LENGTH_LONG).show();
             }
         }
     });
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { //firebase authorised
-                            Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             saveAppUser(new ScribexUser(user.getUid()));
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
             Intent menuIntent = new Intent(this, PersonalMenuActivity.class);
             ScribexUser appUser = new ScribexUser(user.getUid());
             menuIntent.putExtra("user", appUser);

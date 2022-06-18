@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -47,6 +48,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
     private recViewDocsAdapter adapter;
 
     private ScribexUser appUser;
+    private FirebaseUser user;
 
     private RecyclerView recViewDocs;
     private TextView txtUsername;
@@ -65,6 +67,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         //init view elements
         recViewDocs = findViewById(R.id.recViewDocs);
@@ -99,7 +102,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         //retrieve ScribexUser
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
-        Toast.makeText(this, appUser.getUid(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, appUser.getUid(), Toast.LENGTH_LONG).show();
 
         //recyclerview code, updates the List docs in realtime from firestore
         adapter = new recViewDocsAdapter(this);
@@ -128,28 +131,14 @@ public class PersonalMenuActivity extends AppCompatActivity {
                 });
 
         //personal profile code
-        DocumentReference ref = firestore.collection("users").document(appUser.getUid());
-        ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot doc = task.getResult();
-                    if (doc.exists()) {
-                        Map<String, Object> map = doc.getData();
-                        if (map != null && map.containsKey("name")) {
-                            txtUsername.setText(doc.getString("name"));
-                        } else {
-                            txtUsername.setText("No username set yet");
-                        }
-                    } else {
-                        Log.d(TAG, "no such user?? " + appUser.getUid());
-                    }
-                } else {
-                    Log.d(TAG, "get failed, " + task.getException());
-                }
+        if (user != null) {
+            String name = user.getDisplayName();
+            if (name != null) {
+                txtUsername.setText(name);
+            } else {
+                txtUsername.setText("Username not yet set");
             }
-        });
-
+        }
     }
 
     private void processQuery(QueryDocumentSnapshot doc, List<Document> docs) {
