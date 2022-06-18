@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PersonalMenuActivity extends AppCompatActivity {
@@ -87,17 +89,24 @@ public class PersonalMenuActivity extends AppCompatActivity {
             }
         });
 
-        //retrieve ScribexUser from MainActivity
+        btnEditProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEditProfileActivity();
+            }
+        });
+
+        //retrieve ScribexUser
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
         Toast.makeText(this, appUser.getUid(), Toast.LENGTH_LONG).show();
 
-        //recyclerview test code
+        //recyclerview code, updates the List docs in realtime from firestore
         adapter = new recViewDocsAdapter(this);
         recViewDocs.setAdapter(adapter);
         recViewDocs.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Document> docs = new ArrayList<>(); //TODO: pull from firebase when set up
+        List<Document> docs = new ArrayList<>();
         firestore.collection("users")
                 .document(appUser.getUid())
                 .collection("transcribed")
@@ -117,6 +126,30 @@ public class PersonalMenuActivity extends AppCompatActivity {
                         Log.d(TAG, "update docs success refresh");
                     }
                 });
+
+        //personal profile code
+        DocumentReference ref = firestore.collection("users").document(appUser.getUid());
+        ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot doc = task.getResult();
+                    if (doc.exists()) {
+                        Map<String, Object> map = doc.getData();
+                        if (map != null && map.containsKey("name")) {
+                            txtUsername.setText(doc.getString("name"));
+                        } else {
+                            txtUsername.setText("No username set yet");
+                        }
+                    } else {
+                        Log.d(TAG, "no such user?? " + appUser.getUid());
+                    }
+                } else {
+                    Log.d(TAG, "get failed, " + task.getException());
+                }
+            }
+        });
+
     }
 
     private void processQuery(QueryDocumentSnapshot doc, List<Document> docs) {
@@ -161,6 +194,12 @@ public class PersonalMenuActivity extends AppCompatActivity {
         Intent uploadImageIntent = new Intent(PersonalMenuActivity.this, UploadImageActivity.class);
         uploadImageIntent.putExtra("user", appUser);
         startActivity(uploadImageIntent);
+    }
+
+    private void openEditProfileActivity() {
+        Intent editProfileIntent = new Intent(PersonalMenuActivity.this, EditProfileActivity.class);
+        editProfileIntent.putExtra("user", appUser);
+        startActivity(editProfileIntent);
     }
 
     /**
