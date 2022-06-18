@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ScribeX</string>
     <string name="web_client_id">356171772264-kn3jf85t6nuit0712g7chn52f0fhbnge.apps.googleusercontent.com</string>
+    <string name="google_sign_in">Google Sign-In</string>
+    <string name="login_sign_up">Login/Sign-up</string>
+    <string name="scribex">ScribeX</string>
 </resources>

@@ -11,18 +11,16 @@
         android:layout_width="411dp"
         android:layout_height="475dp"
         android:background="@drawable/ic_login"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewAppName"
         android:layout_width="286dp"
         android:layout_height="136dp"
         android:layout_marginStart="24dp"
-        android:text="ScribeX"
+        android:text="@string/scribex"
         android:textAlignment="inherit"
         android:textColor="@color/white"
         android:textSize="50sp"
@@ -33,36 +31,36 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.398" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="279dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="44dp"
+        android:text="@string/login_sign_up"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/sign_in_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/sign_in_button"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
     <Button
         android:id="@+id/sign_in_button"
         android:layout_width="283dp"
         android:layout_height="71dp"
         android:backgroundTint="#000000"
         android:drawableLeft="@drawable/common_google_signin_btn_icon_light_normal"
-        android:text="Google Sign-In"
+        android:text="@string/google_sign_in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view"
-        app:layout_constraintVertical_bias="0.475" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="126dp"
-        android:layout_height="36dp"
-        android:layout_marginBottom="152dp"
-        android:text="Login/Sign-up"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.224"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.037" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="251dp"
         android:layout_height="132dp"
-        android:contentDescription=""
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="@+id/view"
         app:layout_constraintHorizontal_bias="0.1"
