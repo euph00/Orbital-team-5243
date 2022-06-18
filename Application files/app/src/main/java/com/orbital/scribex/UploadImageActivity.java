@@ -113,7 +113,7 @@ public class UploadImageActivity extends AppCompatActivity {
                                     for (QueryDocumentSnapshot doc : docs) {
                                         if (doc.getId().equals(newDocName)) {
                                             showWarningNameCollision();
-                                            return; //TODO: implement name collision check, only begin upload process after no collision confirmed
+                                            return;
                                         }
                                     }
                                     upload();
@@ -180,7 +180,7 @@ public class UploadImageActivity extends AppCompatActivity {
                     firestore.collection("users")
                             .document(appUser.getUid())
                             .collection("uploads")
-                            .document(photo.getName())//TODO: replace document name with photo's name after implementing collision check
+                            .document(photo.getName())
                             .set(photo);
                     firestore.collection("users")
                             .document(appUser.getUid())
