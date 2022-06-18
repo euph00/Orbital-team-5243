@@ -1,3 +1,5 @@
+THIS DIRECTORY IS DEPRECATED, AND IS NO LONGER USED IN THE PROJECT. THIS IS ONLY FOR ARCHIVING PURPOSES.
+
 NOTE: This section of the project is meant to be run after setting up the relevant
 python dependencies and NVIDIA GPU computing toolkit + CUDNN. Also, do download the
 EMNIST dataset from https://www.kaggle.com/datasets/crawford/emnist and unzip the
