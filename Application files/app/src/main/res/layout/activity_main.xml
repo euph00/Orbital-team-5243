@@ -8,8 +8,8 @@
 
     <View
         android:id="@+id/view"
-        android:layout_width="411dp"
-        android:layout_height="475dp"
+        android:layout_width="412dp"
+        android:layout_height="494dp"
         android:background="@drawable/ic_login"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,15 +28,16 @@
         android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.049"
+        app:layout_constraintHorizontal_bias="0.009"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.398" />
+        app:layout_constraintVertical_bias="0.304" />
 
     <Button
         android:id="@+id/sign_in_button"
         android:layout_width="283dp"
         android:layout_height="71dp"
+        android:layout_marginBottom="124dp"
         android:backgroundTint="#000000"
         android:drawableLeft="@drawable/common_google_signin_btn_icon_light_normal"
         android:text="Google Sign-In"
@@ -44,19 +45,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view"
-        app:layout_constraintVertical_bias="0.475" />
+        app:layout_constraintVertical_bias="0.976" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="126dp"
-        android:layout_height="36dp"
-        android:layout_marginBottom="152dp"
+        android:layout_width="283dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="50dp"
         android:text="Login/Sign-up"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/sign_in_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.224"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <ImageView
         android:id="@+id/imageView"
