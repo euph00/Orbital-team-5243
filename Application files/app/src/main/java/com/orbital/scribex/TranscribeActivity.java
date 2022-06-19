@@ -91,7 +91,7 @@ public class TranscribeActivity extends AppCompatActivity {
         btnTakePic = findViewById(R.id.btnTakePic);
         btnUpload = findViewById(R.id.btnUpload);
         imageViewDoc = findViewById(R.id.imageViewDoc);
-//        textViewWarning = findViewById(R.id.textViewWarning);
+        textViewWarning = findViewById(R.id.textViewWarning);
 
         btnTakePic.setOnClickListener(new View.OnClickListener() {
             @Override

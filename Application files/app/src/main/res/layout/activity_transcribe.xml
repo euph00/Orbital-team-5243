@@ -154,5 +154,26 @@
         app:layout_constraintTop_toTopOf="@+id/guideline50"
         app:layout_constraintVertical_bias="0.0" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="578dp" />
+
+    <TextView
+        android:id="@+id/textViewWarning"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="sans-serif"
+        android:textAlignment="center"
+        android:text="A file with this name already exists"
+        android:textColor="#ff0000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/guideline2"
+        app:layout_constraintEnd_toEndOf="@id/guideline46"
+        app:layout_constraintStart_toStartOf="@id/guideline45"
+        app:layout_constraintTop_toBottomOf="@id/guideline51" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

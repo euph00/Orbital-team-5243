@@ -2,7 +2,7 @@ package com.orbital.scribex;
 
 import java.io.Serializable;
 
-public class Document implements Serializable {
+public class    Document implements Serializable {
 
     private static final int SNIPPET_LENGTH = 30;
 
