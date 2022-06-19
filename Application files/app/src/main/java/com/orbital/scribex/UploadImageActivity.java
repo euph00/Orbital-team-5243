@@ -19,6 +19,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -72,6 +74,9 @@ public class UploadImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
         setContentView(R.layout.upload_menu);
 
         firestore = FirebaseFirestore.getInstance();
@@ -177,6 +182,7 @@ public class UploadImageActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     photo.setId(task.getResult().getId());
                     String name = editTextDocName.getText().toString();
+                    if (name.equals("")) name = photo.getId();
                     photo.setName(name);
                     firestore.collection("users")
                             .document(appUser.getUid())
