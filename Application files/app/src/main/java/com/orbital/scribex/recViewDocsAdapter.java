@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class RecViewDocsAdapter extends RecyclerView.Adapter<RecViewDocsAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: Called");
         holder.name_doc.setText(docs.get(position).getName());
-        //TODO: set document image when implemented
+        Picasso.with(context).load(docs.get(position).getUrl()).into(holder.img_doc);
         holder.snippet_doc.setText(docs.get(position).getSnippet());
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override

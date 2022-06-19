@@ -1,8 +1,10 @@
 package com.orbital.scribex;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
-public class    Document implements Serializable {
+public class Document implements Serializable {
 
     private static final int SNIPPET_LENGTH = 30;
 
@@ -11,6 +13,7 @@ public class    Document implements Serializable {
     private String dateTime;
     private String text;
     private String snippet;
+    private String url;
 
     /**
      * Constructs a java object representing a scanned document.
@@ -25,6 +28,7 @@ public class    Document implements Serializable {
         this.dateTime = dateTime;
         this.text = text;
         this.snippet = text.substring(0, Math.min(text.length(), SNIPPET_LENGTH));
+        this.url = null;
     }
 
     public void setId(String id) {
@@ -65,5 +69,13 @@ public class    Document implements Serializable {
 
     public String getSnippet() {
         return snippet;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return this.url;
     }
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,10 +18,13 @@ import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -141,10 +145,33 @@ public class DocumentMenuActivity extends AppCompatActivity {
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    docs.add(new Document(name, name, null, readFile(localFile)));
+                    Document document = new Document(name, name, null, readFile(localFile));
+                    docs.add(document);
                     Log.d(TAG, String.valueOf(docs.size()));
                     localFile.delete();
                     adapter.setDocs(docs);
+                    firestore.collection("users")
+                            .document(appUser.getUid())
+                            .collection("uploads")
+                            .document(document.getName())
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot dcs = task.getResult();
+                                        String urlString = dcs.getString("remoteUri");
+                                        if (urlString != null) {
+                                            Uri url = Uri.parse(urlString);
+                                            document.setUrl(url.toString());
+                                            adapter.setDocs(docs);
+                                        }
+
+                                    } else {
+                                        Log.e(TAG, "get url failed", task.getException());
+                                    }
+                                }
+                            });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
