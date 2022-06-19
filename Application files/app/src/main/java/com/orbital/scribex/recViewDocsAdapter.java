@@ -14,16 +14,18 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.ViewHolder>{
+public class RecViewDocsAdapter extends RecyclerView.Adapter<RecViewDocsAdapter.ViewHolder>{
     private static final String TAG = "recViewDocsAdapter";
 
     private List<Document> docs = new ArrayList<>();
     private Context context;
 
-    public recViewDocsAdapter(Context context) {
+    public RecViewDocsAdapter(Context context) {
         this.context = context;
     }
 
@@ -43,14 +45,14 @@ public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: Called");
         holder.name_doc.setText(docs.get(position).getName());
-        //TODO: set document image when implemented
+        Picasso.with(context).load(docs.get(position).getUrl()).into(holder.img_doc);
         holder.snippet_doc.setText(docs.get(position).getSnippet());
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, docs.get(holder.getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
-                Intent viewDocumentIntent = new Intent(context, DocumentActivity.class);
-                //pass document object to DocumentActivity
+                Intent viewDocumentIntent = new Intent(context, DocumentViewActivity.class);
+                //pass document object to DocumentViewActivity
                 viewDocumentIntent.putExtra("Document", docs.get(holder.getAdapterPosition()));
                 context.startActivity(viewDocumentIntent);
             }

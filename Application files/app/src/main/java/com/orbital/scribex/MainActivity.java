@@ -32,7 +32,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -161,14 +160,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Starts PersonalMenuActivity iff a registered user is currently logged in to FireBase.
+     * Starts DocumentMenuActivity iff a registered user is currently logged in to FireBase.
      * Else if FireBase user is null, log out of Google auth as well.
      * @param user  FirebaseUser object from mAuth.getCurrentUser(). null if no user is currently logged in.
      */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
 //            Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
-            Intent menuIntent = new Intent(this, PersonalMenuActivity.class);
+            Intent menuIntent = new Intent(this, DocumentMenuActivity.class);
             ScribexUser appUser = new ScribexUser(user.getUid());
             menuIntent.putExtra("user", appUser);
             startActivity(menuIntent);

@@ -1,9 +1,14 @@
 package com.orbital.scribex;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -12,6 +17,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,8 +29,13 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
-public class EditProfileActivity extends AppCompatActivity {
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URI;
+
+public class ProfilePageActivity extends AppCompatActivity {
 
     private static final String TAG = "EditProfileActivity";
 
@@ -35,13 +49,17 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText editTextUserName;
     private Button buttonApplyChanges;
     private Button buttonDeleteAccount;
+    private Button btnSignOut;
 
     private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_profile);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_profile_page);
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -52,6 +70,15 @@ public class EditProfileActivity extends AppCompatActivity {
         this.editTextUserName = findViewById(R.id.editTextUserName);
         this.buttonApplyChanges = findViewById(R.id.buttonApplyChanges);
         this.buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
+        this.btnSignOut = findViewById(R.id.btnSignOut);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            Uri url = Uri.parse(acct.getPhotoUrl().toString().replace("s96-c", "s400-c"));
+            Picasso.with(this).load(url).into(imgViewProfilePic);
+        } else {
+            Log.d(TAG, "Google account was null");
+        }
 
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
@@ -67,6 +94,13 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         //OnClickListeners
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
+
         buttonApplyChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,16 +127,16 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "user name updated");
-                    openPersonalMenuActivity();
+                    openDocumentMenuActivity();
                 }
             }
         });
     }
 
-    private void openPersonalMenuActivity() {
-        Intent personalMenuActivityIntent = new Intent(EditProfileActivity.this, PersonalMenuActivity.class);
-        personalMenuActivityIntent.putExtra("user", appUser);
-        startActivity(personalMenuActivityIntent);
+    private void openDocumentMenuActivity() {
+        Intent documentMenuActivityIntent = new Intent(ProfilePageActivity.this, DocumentMenuActivity.class);
+        documentMenuActivityIntent.putExtra("user", appUser);
+        startActivity(documentMenuActivityIntent);
     }
 
     private void deleteAccount() {
@@ -112,7 +146,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "User account deleted");
-                        Toast.makeText(EditProfileActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ProfilePageActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
                         openMainActivity();
                     } else {
                         Log.e(TAG, "Failed to delete account", task.getException());
@@ -123,7 +157,18 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void openMainActivity() {
-        Intent mainActivityIntent = new Intent(EditProfileActivity.this, MainActivity.class);
+        Intent mainActivityIntent = new Intent(ProfilePageActivity.this, MainActivity.class);
         startActivity(mainActivityIntent);
+    }
+
+    /**
+     * Signs the user out of Firebase.
+     * Note: this does NOT sign the user out of Google Authentication.
+     * Sign out from Google is only done after returning to MainActivity.
+     */
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        Intent signOutIntent = new Intent(this, MainActivity.class);
+        startActivity(signOutIntent);
     }
 }

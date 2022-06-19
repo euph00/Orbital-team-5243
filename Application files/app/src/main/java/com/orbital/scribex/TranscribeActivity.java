@@ -15,10 +15,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -49,9 +49,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class UploadImageActivity extends AppCompatActivity {
+public class TranscribeActivity extends AppCompatActivity {
 
-    private static final String TAG = "UploadImageActivity";
+    private static final String TAG = "TranscribeActivity";
 
     private FirebaseFirestore firestore;
     private StorageReference storageReference;
@@ -72,7 +72,10 @@ public class UploadImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_image);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_transcribe);
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -94,6 +97,7 @@ public class UploadImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 takePhoto();
+                btnTakePic.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -130,7 +134,7 @@ public class UploadImageActivity extends AppCompatActivity {
 
     /**
      * Tries to upload photos in the Collection photos to firebase storage. This method DOES NOT update firestore itself.
-     * Firestore updates are handled by UploadImageActivity::updatePhotoDatabase called in this method.
+     * Firestore updates are handled by TranscribeActivity::updatePhotoDatabase called in this method.
      */
     private void upload() {
         //Guard clause: case where there is nothing to upload
@@ -148,7 +152,7 @@ public class UploadImageActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         Task<Uri> downloadUrl = imageRef.getDownloadUrl();
-                        downloadUrl.addOnSuccessListener(UploadImageActivity.this, new OnSuccessListener<Uri>() {
+                        downloadUrl.addOnSuccessListener(TranscribeActivity.this, new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri remoteUri) {
                                 photo.setRemoteUri(remoteUri);
@@ -164,7 +168,7 @@ public class UploadImageActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is to be called by UploadImageActivity::upload. This handles updating of firestore database.
+     * This method is to be called by TranscribeActivity::upload. This handles updating of firestore database.
      * @param photo Photo object that was just uploaded to firebase storage. remoteUri field should have been populated with uri of photo on firebase storage.
      */
     private void updatePhotoDatabase(Photo photo) {
@@ -176,6 +180,7 @@ public class UploadImageActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     photo.setId(task.getResult().getId());
                     String name = editTextDocName.getText().toString();
+                    if (name.equals("")) name = photo.getId();
                     photo.setName(name);
                     firestore.collection("users")
                             .document(appUser.getUid())
@@ -206,7 +211,7 @@ public class UploadImageActivity extends AppCompatActivity {
                             .collection("uploads")
                             .document(photo.getId())
                             .delete();
-                    Toast.makeText(UploadImageActivity.this, "Upload image success.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TranscribeActivity.this, "Upload image success.", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "error updating photo data");
                 }
@@ -237,7 +242,7 @@ public class UploadImageActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(Map<String, Boolean> result) {
                     if (result.containsValue(false)) {
-                        Toast.makeText(UploadImageActivity.this, "Unable to open camera, please grant permissions", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TranscribeActivity.this, "Unable to open camera, please grant permissions", Toast.LENGTH_SHORT).show();
                     } else {
                         invokeCamera();
                     }
@@ -245,7 +250,7 @@ public class UploadImageActivity extends AppCompatActivity {
             });
 
     /**
-     * On permission granted by UploadImageActivity::takePhoto, file destination created and camera opened.
+     * On permission granted by TranscribeActivity::takePhoto, file destination created and camera opened.
      */
     private void invokeCamera() {
         File file = createImageFile();

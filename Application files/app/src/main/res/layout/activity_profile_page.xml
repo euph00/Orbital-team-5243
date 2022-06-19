@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ProfilePageActivity">
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -18,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.13" />
+        app:layout_constraintGuide_percent="0.15" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline20"
@@ -118,23 +119,11 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.7906977" />
 
-    <View
-        android:id="@+id/view3"
-        android:layout_width="412dp"
-        android:layout_height="121dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/ic_header"
-        app:layout_constraintBottom_toTopOf="@+id/guideline18"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.09" />
-
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#000000"
         android:fontFamily="sans-serif-black"
         android:gravity="center"
         android:text="Profile"
@@ -143,35 +132,36 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline19"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/view3"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imgViewProfilePic"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline24"
         app:layout_constraintEnd_toStartOf="@+id/guideline30"
         app:layout_constraintStart_toStartOf="@+id/guideline29"
         app:layout_constraintTop_toTopOf="@+id/guideline23"
-        tools:srcCompat="@drawable/grepbgprofilepic" />
+        android:background="@drawable/grepbgprofilepic" />
+
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
         android:text="Username:"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline26"
         app:layout_constraintEnd_toStartOf="@+id/guideline33"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline31"
-        app:layout_constraintTop_toTopOf="@+id/guideline25"
-        app:layout_constraintVertical_bias="0.468" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editTextUserName" />
 
     <EditText
-        android:id="@+id/editusername"
+        android:id="@+id/editTextUserName"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:ems="10"
@@ -186,7 +176,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/savechangesbtn"
+        android:id="@+id/buttonApplyChanges"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:backgroundTint="#000000"
@@ -200,7 +190,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/signoutbtn"
+        android:id="@+id/btnSignOut"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:backgroundTint="#FF0000"
@@ -213,7 +203,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/deleteaccountbtn"
+        android:id="@+id/buttonDeleteAccount"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:backgroundTint="#FF0000"

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DocumentViewActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--Top header-->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline39"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.13132694" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.02" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.20" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.80" />
+
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#000000"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline40"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#000000"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:text="document_name"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline39"
+            app:layout_constraintEnd_toEndOf="@id/guideline3"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/guideline1"
+            app:layout_constraintTop_toTopOf="@id/guideline5"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <!--Delete button-->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="22dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.96" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.79" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.87" />
+
+        <ImageView
+            android:id="@+id/redcircle"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/delete_doc_button"
+            app:layout_constraintBottom_toTopOf="@+id/guideline39"
+            app:layout_constraintEnd_toStartOf="@+id/guideline14"
+            app:layout_constraintStart_toStartOf="@+id/guideline15"
+            app:layout_constraintTop_toTopOf="@+id/guideline5" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:background="@drawable/transparent_button"
+            android:fontFamily="sans-serif-black"
+            android:text="Delete"
+            android:textSize="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline39"
+            app:layout_constraintEnd_toStartOf="@+id/guideline14"
+            app:layout_constraintStart_toStartOf="@+id/guideline15"
+            app:layout_constraintTop_toTopOf="@+id/guideline5" />
+
+
+        <!--Display Text-->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline40">
+
+            <TextView
+                android:id="@+id/txtDoc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
+                />
+
+        </androidx.core.widget.NestedScrollView>
+
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/txtDoc"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="0dp"-->
+        <!--                android:text="TextView"-->
+        <!--                android:textAlignment="center"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintHorizontal_bias="0.0"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="@+id/guideline40" />-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

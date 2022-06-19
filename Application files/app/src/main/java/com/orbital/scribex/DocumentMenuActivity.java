@@ -8,23 +8,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,30 +33,31 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
-public class PersonalMenuActivity extends AppCompatActivity {
+import de.hdodenhof.circleimageview.CircleImageView;
 
-    private static final String TAG = "PersonalMenuActivity";
+public class DocumentMenuActivity extends AppCompatActivity {
 
-    private recViewDocsAdapter adapter;
+    private static final String TAG = "DocumentMenuActivity";
+
+    private RecViewDocsAdapter adapter;
 
     private ScribexUser appUser;
     private FirebaseUser user;
 
     private RecyclerView recViewDocs;
-    private TextView txtUsername;
-    private ImageView imgView_icon;
+
     private Button btnNewDoc;
     private Button btnEditProfile;
-    private Button btnSignOut;
+    private CircleImageView profileImage;
 
     private FirebaseFirestore firestore;
     private FirebaseStorage firebaseStorage;
@@ -68,7 +68,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_personal_menu);
+        setContentView(R.layout.activity_document_menu);
 
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
@@ -76,31 +76,30 @@ public class PersonalMenuActivity extends AppCompatActivity {
 
         //init view elements
         recViewDocs = findViewById(R.id.recViewDocs);
-        txtUsername = findViewById(R.id.textViewUsername);
-        imgView_icon = findViewById(R.id.imgView_icon);
         btnNewDoc = findViewById(R.id.btnNewDoc);
         btnEditProfile = findViewById(R.id.btnEditProfile);
-        btnSignOut = findViewById(R.id.btnSignOut);
+        profileImage = findViewById(R.id.profileimage);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            Picasso.with(this).load(acct.getPhotoUrl()).into(profileImage);
+            Log.d(TAG, "done setting profile pic");
+        } else {
+            Log.d(TAG, "Account was null");
+        }
 
         //onClickListeners for buttons
-        btnSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-            }
-        });
-
         btnNewDoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openUploadImageActivity();
+                openTranscribeActivity();
             }
         });
 
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openEditProfileActivity();
+                openProfilePageActivity();
             }
         });
 
@@ -110,7 +109,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
 //        Toast.makeText(this, appUser.getUid(), Toast.LENGTH_LONG).show();
 
         //recyclerview code, updates the List docs in realtime from firestore
-        adapter = new recViewDocsAdapter(this);
+        adapter = new RecViewDocsAdapter(this);
         recViewDocs.setAdapter(adapter);
         recViewDocs.setLayoutManager(new LinearLayoutManager(this));
 
@@ -134,16 +133,6 @@ public class PersonalMenuActivity extends AppCompatActivity {
                         Log.d(TAG, "update docs success refresh");
                     }
                 });
-
-        //personal profile code
-        if (user != null) {
-            String name = user.getDisplayName();
-            if (name != null) {
-                txtUsername.setText(name);
-            } else {
-                txtUsername.setText("Username not yet set");
-            }
-        }
     }
 
     private void processQuery(QueryDocumentSnapshot doc, List<Document> docs) {
@@ -156,10 +145,33 @@ public class PersonalMenuActivity extends AppCompatActivity {
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    docs.add(new Document(name, name, null, readFile(localFile)));
+                    Document document = new Document(name, name, null, readFile(localFile));
+                    docs.add(document);
                     Log.d(TAG, String.valueOf(docs.size()));
                     localFile.delete();
                     adapter.setDocs(docs);
+                    firestore.collection("users")
+                            .document(appUser.getUid())
+                            .collection("uploads")
+                            .document(document.getName())
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot dcs = task.getResult();
+                                        String urlString = dcs.getString("remoteUri");
+                                        if (urlString != null) {
+                                            Uri url = Uri.parse(urlString);
+                                            document.setUrl(url.toString());
+                                            adapter.setDocs(docs);
+                                        }
+
+                                    } else {
+                                        Log.e(TAG, "get url failed", task.getException());
+                                    }
+                                }
+                            });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -184,26 +196,15 @@ public class PersonalMenuActivity extends AppCompatActivity {
         }
     }
 
-    private void openUploadImageActivity() {
-        Intent uploadImageIntent = new Intent(PersonalMenuActivity.this, UploadImageActivity.class);
-        uploadImageIntent.putExtra("user", appUser);
-        startActivity(uploadImageIntent);
+    private void openTranscribeActivity() {
+        Intent transcribeIntent = new Intent(DocumentMenuActivity.this, TranscribeActivity.class);
+        transcribeIntent.putExtra("user", appUser);
+        startActivity(transcribeIntent);
     }
 
-    private void openEditProfileActivity() {
-        Intent editProfileIntent = new Intent(PersonalMenuActivity.this, EditProfileActivity.class);
+    private void openProfilePageActivity() {
+        Intent editProfileIntent = new Intent(DocumentMenuActivity.this, ProfilePageActivity.class);
         editProfileIntent.putExtra("user", appUser);
         startActivity(editProfileIntent);
-    }
-
-    /**
-     * Signs the user out of Firebase.
-     * Note: this does NOT sign the user out of Google Authentication.
-     * Sign out from Google is only done after returning to MainActivity.
-     */
-    private void signOut() {
-        FirebaseAuth.getInstance().signOut();
-        Intent signOutIntent = new Intent(this, MainActivity.class);
-        startActivity(signOutIntent);
     }
 }
