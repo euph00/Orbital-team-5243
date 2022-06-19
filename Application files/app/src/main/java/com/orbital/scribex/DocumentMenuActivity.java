@@ -15,6 +15,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +29,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,20 +38,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class DocumentMenuActivity extends AppCompatActivity {
 
     private static final String TAG = "DocumentMenuActivity";
 
-    private recViewDocsAdapter adapter;
+    private RecViewDocsAdapter adapter;
 
     private ScribexUser appUser;
     private FirebaseUser user;
 
     private RecyclerView recViewDocs;
-//    private TextView txtUsername;
-//    private ImageView imgView_icon;
+
     private Button btnNewDoc;
     private Button btnEditProfile;
+    private CircleImageView profileImage;
 
     private FirebaseFirestore firestore;
     private FirebaseStorage firebaseStorage;
@@ -67,11 +72,17 @@ public class DocumentMenuActivity extends AppCompatActivity {
 
         //init view elements
         recViewDocs = findViewById(R.id.recViewDocs);
-//        txtUsername = findViewById(R.id.textViewUsername);
-//        imgView_icon = findViewById(R.id.imgView_icon);
         btnNewDoc = findViewById(R.id.btnNewDoc);
         btnEditProfile = findViewById(R.id.btnEditProfile);
+        profileImage = findViewById(R.id.profileimage);
 
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            Picasso.with(this).load(acct.getPhotoUrl()).into(profileImage);
+            Log.d(TAG, "done setting profile pic");
+        } else {
+            Log.d(TAG, "Account was null");
+        }
 
         //onClickListeners for buttons
         btnNewDoc.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +105,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
 //        Toast.makeText(this, appUser.getUid(), Toast.LENGTH_LONG).show();
 
         //recyclerview code, updates the List docs in realtime from firestore
-        adapter = new recViewDocsAdapter(this);
+        adapter = new RecViewDocsAdapter(this);
         recViewDocs.setAdapter(adapter);
         recViewDocs.setLayoutManager(new LinearLayoutManager(this));
 

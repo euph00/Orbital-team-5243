@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.ViewHolder>{
+public class RecViewDocsAdapter extends RecyclerView.Adapter<RecViewDocsAdapter.ViewHolder>{
     private static final String TAG = "recViewDocsAdapter";
 
     private List<Document> docs = new ArrayList<>();
     private Context context;
 
-    public recViewDocsAdapter(Context context) {
+    public RecViewDocsAdapter(Context context) {
         this.context = context;
     }
 
