@@ -49,8 +49,8 @@ public class recViewDocsAdapter extends RecyclerView.Adapter<recViewDocsAdapter.
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, docs.get(holder.getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
-                Intent viewDocumentIntent = new Intent(context, DocumentActivity.class);
-                //pass document object to DocumentActivity
+                Intent viewDocumentIntent = new Intent(context, DocumentViewActivity.class);
+                //pass document object to DocumentViewActivity
                 viewDocumentIntent.putExtra("Document", docs.get(holder.getAdapterPosition()));
                 context.startActivity(viewDocumentIntent);
             }

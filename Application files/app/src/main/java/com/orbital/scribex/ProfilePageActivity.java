@@ -23,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class EditProfileActivity extends AppCompatActivity {
+public class ProfilePageActivity extends AppCompatActivity {
 
     private static final String TAG = "EditProfileActivity";
 
@@ -47,7 +47,7 @@ public class EditProfileActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        setContentView(R.layout.profile_page);
+        setContentView(R.layout.activity_profile_page);
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -107,16 +107,16 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "user name updated");
-                    openPersonalMenuActivity();
+                    openDocumentMenuActivity();
                 }
             }
         });
     }
 
-    private void openPersonalMenuActivity() {
-        Intent personalMenuActivityIntent = new Intent(EditProfileActivity.this, PersonalMenuActivity.class);
-        personalMenuActivityIntent.putExtra("user", appUser);
-        startActivity(personalMenuActivityIntent);
+    private void openDocumentMenuActivity() {
+        Intent documentMenuActivityIntent = new Intent(ProfilePageActivity.this, DocumentMenuActivity.class);
+        documentMenuActivityIntent.putExtra("user", appUser);
+        startActivity(documentMenuActivityIntent);
     }
 
     private void deleteAccount() {
@@ -126,7 +126,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "User account deleted");
-                        Toast.makeText(EditProfileActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ProfilePageActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
                         openMainActivity();
                     } else {
                         Log.e(TAG, "Failed to delete account", task.getException());
@@ -137,7 +137,7 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void openMainActivity() {
-        Intent mainActivityIntent = new Intent(EditProfileActivity.this, MainActivity.class);
+        Intent mainActivityIntent = new Intent(ProfilePageActivity.this, MainActivity.class);
         startActivity(mainActivityIntent);
     }
 

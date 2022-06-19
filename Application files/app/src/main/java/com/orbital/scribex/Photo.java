@@ -16,9 +16,9 @@ public class Photo {
     /**
      * Creates an abstraction of a Photo taken by the user.
      * @param localUri  uri on local storage. Invoke FileProvider::getUriForFile and pass here.
-     * @param remoteUri uri on Firebase Storage. This field will be set by UploadImageActivity::upload when firebase storage receives image.
+     * @param remoteUri uri on Firebase Storage. This field will be set by TranscribeActivity::upload when firebase storage receives image.
      * @param dateTaken initialised by calling Date::new when Photo object is created
-     * @param id    id assigned by firebase firestore. Assigned automatically by UploadImageActivity::UpdatePhotoDatabase when firestore is updated.
+     * @param id    id assigned by firebase firestore. Assigned automatically by TranscribeActivity::UpdatePhotoDatabase when firestore is updated.
      */
     Photo(Uri localUri, Uri remoteUri, Date dateTaken, String id, String name) {
         this.localUri = localUri;

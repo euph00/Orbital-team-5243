@@ -14,18 +14,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -40,12 +33,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
-public class PersonalMenuActivity extends AppCompatActivity {
+public class DocumentMenuActivity extends AppCompatActivity {
 
-    private static final String TAG = "PersonalMenuActivity";
+    private static final String TAG = "DocumentMenuActivity";
 
     private recViewDocsAdapter adapter;
 
@@ -67,7 +59,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        setContentView(R.layout.document_display);
+        setContentView(R.layout.activity_document_menu);
 
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
@@ -85,14 +77,14 @@ public class PersonalMenuActivity extends AppCompatActivity {
         btnNewDoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openUploadImageActivity();
+                openTranscribeActivity();
             }
         });
 
         btnEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openEditProfileActivity();
+                openProfilePageActivity();
             }
         });
 
@@ -166,14 +158,14 @@ public class PersonalMenuActivity extends AppCompatActivity {
         }
     }
 
-    private void openUploadImageActivity() {
-        Intent uploadImageIntent = new Intent(PersonalMenuActivity.this, UploadImageActivity.class);
-        uploadImageIntent.putExtra("user", appUser);
-        startActivity(uploadImageIntent);
+    private void openTranscribeActivity() {
+        Intent transcribeIntent = new Intent(DocumentMenuActivity.this, TranscribeActivity.class);
+        transcribeIntent.putExtra("user", appUser);
+        startActivity(transcribeIntent);
     }
 
-    private void openEditProfileActivity() {
-        Intent editProfileIntent = new Intent(PersonalMenuActivity.this, EditProfileActivity.class);
+    private void openProfilePageActivity() {
+        Intent editProfileIntent = new Intent(DocumentMenuActivity.this, ProfilePageActivity.class);
         editProfileIntent.putExtra("user", appUser);
         startActivity(editProfileIntent);
     }
