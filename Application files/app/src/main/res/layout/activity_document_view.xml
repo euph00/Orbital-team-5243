@@ -125,7 +125,7 @@
                 app:layout_constraintTop_toTopOf="@+id/guideline16" />
 
             <Button
-                android:id="@+id/bthDeleteDoc"
+                android:id="@+id/btnDelete"
                 android:layout_width="66dp"
                 android:layout_height="66dp"
                 android:background="@drawable/transparent_button"
@@ -140,7 +140,7 @@
 
             <!--Display Text-->
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/txtDoc"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:text="TextView"
