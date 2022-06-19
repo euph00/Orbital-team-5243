@@ -72,7 +72,7 @@ public class UploadImageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_image);
+        setContentView(R.layout.upload_menu);
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -94,6 +94,7 @@ public class UploadImageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 takePhoto();
+                btnTakePic.setVisibility(View.INVISIBLE);
             }
         });
 

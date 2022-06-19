@@ -35,13 +35,14 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText editTextUserName;
     private Button buttonApplyChanges;
     private Button buttonDeleteAccount;
+    private Button btnSignOut;
 
     private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_profile);
+        setContentView(R.layout.profile_page);
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -52,6 +53,7 @@ public class EditProfileActivity extends AppCompatActivity {
         this.editTextUserName = findViewById(R.id.editTextUserName);
         this.buttonApplyChanges = findViewById(R.id.buttonApplyChanges);
         this.buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
+        this.btnSignOut = findViewById(R.id.btnSignOut);
 
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
@@ -67,6 +69,13 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         //OnClickListeners
+        btnSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
+
         buttonApplyChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,5 +134,16 @@ public class EditProfileActivity extends AppCompatActivity {
     private void openMainActivity() {
         Intent mainActivityIntent = new Intent(EditProfileActivity.this, MainActivity.class);
         startActivity(mainActivityIntent);
+    }
+
+    /**
+     * Signs the user out of Firebase.
+     * Note: this does NOT sign the user out of Google Authentication.
+     * Sign out from Google is only done after returning to MainActivity.
+     */
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        Intent signOutIntent = new Intent(this, MainActivity.class);
+        startActivity(signOutIntent);
     }
 }

@@ -53,11 +53,10 @@ public class PersonalMenuActivity extends AppCompatActivity {
     private FirebaseUser user;
 
     private RecyclerView recViewDocs;
-    private TextView txtUsername;
-    private ImageView imgView_icon;
+//    private TextView txtUsername;
+//    private ImageView imgView_icon;
     private Button btnNewDoc;
     private Button btnEditProfile;
-    private Button btnSignOut;
 
     private FirebaseFirestore firestore;
     private FirebaseStorage firebaseStorage;
@@ -68,7 +67,7 @@ public class PersonalMenuActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_personal_menu);
+        setContentView(R.layout.document_display);
 
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
@@ -76,20 +75,13 @@ public class PersonalMenuActivity extends AppCompatActivity {
 
         //init view elements
         recViewDocs = findViewById(R.id.recViewDocs);
-        txtUsername = findViewById(R.id.textViewUsername);
-        imgView_icon = findViewById(R.id.imgView_icon);
+//        txtUsername = findViewById(R.id.textViewUsername);
+//        imgView_icon = findViewById(R.id.imgView_icon);
         btnNewDoc = findViewById(R.id.btnNewDoc);
         btnEditProfile = findViewById(R.id.btnEditProfile);
-        btnSignOut = findViewById(R.id.btnSignOut);
+
 
         //onClickListeners for buttons
-        btnSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-            }
-        });
-
         btnNewDoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,16 +126,6 @@ public class PersonalMenuActivity extends AppCompatActivity {
                         Log.d(TAG, "update docs success refresh");
                     }
                 });
-
-        //personal profile code
-        if (user != null) {
-            String name = user.getDisplayName();
-            if (name != null) {
-                txtUsername.setText(name);
-            } else {
-                txtUsername.setText("Username not yet set");
-            }
-        }
     }
 
     private void processQuery(QueryDocumentSnapshot doc, List<Document> docs) {
@@ -194,16 +176,5 @@ public class PersonalMenuActivity extends AppCompatActivity {
         Intent editProfileIntent = new Intent(PersonalMenuActivity.this, EditProfileActivity.class);
         editProfileIntent.putExtra("user", appUser);
         startActivity(editProfileIntent);
-    }
-
-    /**
-     * Signs the user out of Firebase.
-     * Note: this does NOT sign the user out of Google Authentication.
-     * Sign out from Google is only done after returning to MainActivity.
-     */
-    private void signOut() {
-        FirebaseAuth.getInstance().signOut();
-        Intent signOutIntent = new Intent(this, MainActivity.class);
-        startActivity(signOutIntent);
     }
 }

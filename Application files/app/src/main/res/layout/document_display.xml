@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    tools:context=".PersonalMenuActivity">
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recViewDocs"
@@ -78,7 +79,7 @@
 
 
     <View
-        android:id="@+id/view3"
+        android:id="@+id/header_bg"
         android:layout_width="412dp"
         android:layout_height="121dp"
         android:layout_marginBottom="12dp"
@@ -91,7 +92,7 @@
         app:layout_constraintVertical_bias="0.09" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/header"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fontFamily="sans-serif-black"
@@ -102,12 +103,12 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline17"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/view3"
+        app:layout_constraintStart_toStartOf="@+id/header_bg"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/transcribebtn"
+        android:id="@+id/btnNewDoc"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:backgroundTint="#000000"
@@ -122,7 +123,7 @@
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profilebtn"
+        android:id="@+id/profileimage"
         android:layout_width="65dp"
         android:layout_height="66dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline13"
@@ -132,6 +133,16 @@
         android:src="@drawable/grepbgprofilepic"
         />
 
+    <Button
+        android:id="@+id/btnEditProfile"
+        android:layout_width="65dp"
+        android:layout_height="66dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline13"
+        app:layout_constraintEnd_toStartOf="@+id/guideline15"
+        app:layout_constraintStart_toStartOf="@+id/guideline14"
+        app:layout_constraintTop_toTopOf="@+id/guideline16"
+        android:background="@drawable/roundbtn"
+        />
 
 
 
