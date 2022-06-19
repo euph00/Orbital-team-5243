@@ -31,6 +31,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -146,6 +149,15 @@ public class MainActivity extends AppCompatActivity {
     private void saveAppUser(ScribexUser scribexUser) {
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("users").document(scribexUser.getUid()).set(scribexUser);
+        firestore.collection("users").document(scribexUser.getUid()).collection("uploads").document("QUEUE").set(new HashMap<String,String>());
+//        firestore.collection("users").document(scribexUser.getUid()).collection("transcribed").document("null").delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                if (task.isSuccessful()) {
+//                    Log.d(TAG, "create transcribed success");
+//                }
+//            }
+//        });
     }
 
     /**

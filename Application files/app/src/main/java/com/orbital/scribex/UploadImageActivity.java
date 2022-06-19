@@ -186,16 +186,26 @@ public class UploadImageActivity extends AppCompatActivity {
                             .document(appUser.getUid())
                             .collection("uploads")
                             .document("QUEUE")
-                            .update(photo.getName(), photo.getRemoteUri());
-                    String url = appUser.getUid();
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            sendRequest(url);
-                        }
-                    });
+                            .update(photo.getName(), photo.getRemoteUri()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        String url = appUser.getUid();
+                                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                                        executor.execute(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                sendRequest(url);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                    firestore.collection("users")
+                            .document(appUser.getUid())
+                            .collection("uploads")
+                            .document(photo.getId())
+                            .delete();
                     Toast.makeText(UploadImageActivity.this, "Upload image success.", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "error updating photo data");
@@ -284,8 +294,9 @@ public class UploadImageActivity extends AppCompatActivity {
             URL url = new URL("http://34.142.160.9/app/" + req);
             URLConnection conn = url.openConnection();
             conn.connect();
-            conn.getContent();
-            Log.d(TAG, "success");
+            Object content = conn.getContent();
+
+            Log.d(TAG, "success on pinging server" + content);
         } catch (Exception e) {
             e.printStackTrace();
         }
