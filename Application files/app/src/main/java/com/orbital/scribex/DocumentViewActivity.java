@@ -34,9 +34,9 @@ public class DocumentViewActivity extends AppCompatActivity {
         doc = (Document) intent.getSerializableExtra("Document");
 
         btnDelete = findViewById(R.id.btnDelete);
-        imgViewDocPreview = findViewById(R.id.imgViewDocPreview);
+//        imgViewDocPreview = findViewById(R.id.imgViewDocPreview);
         txtName = findViewById(R.id.txtName);
-        txtDateCreated = findViewById(R.id.txtDateCreated);
+//        txtDateCreated = findViewById(R.id.txtDateCreated);
         txtDoc = findViewById(R.id.txtDoc);
 
         //TODO: set imgViewDocPreview to be first page of pics
