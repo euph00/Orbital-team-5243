@@ -215,5 +215,16 @@
         app:layout_constraintTop_toTopOf="@+id/guideline28"
         app:layout_constraintVertical_bias="1.0" />
 
+    <TextView
+        android:id="@+id/textViewDelAcctWarn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PLEASE SIGN OUT AND SIGN IN AGAIN TO DELETE ACCOUNT"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/buttonDeleteAccount"
+        app:layout_constraintStart_toStartOf="@+id/guideline29"
+        app:layout_constraintTop_toTopOf="@+id/guideline35" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
