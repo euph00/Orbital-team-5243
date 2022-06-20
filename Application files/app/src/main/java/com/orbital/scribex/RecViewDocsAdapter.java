@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecViewDocsAdapter extends RecyclerView.Adapter<RecViewDocsAdapter.ViewHolder>{
-    private static final String TAG = "recViewDocsAdapter";
+    private static final String TAG = "RecViewDocsAdapter";
 
     private List<Document> docs = new ArrayList<>();
     private Context context;
@@ -50,13 +50,17 @@ public class RecViewDocsAdapter extends RecyclerView.Adapter<RecViewDocsAdapter.
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, docs.get(holder.getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
-                Intent viewDocumentIntent = new Intent(context, DocumentViewActivity.class);
-                //pass document object to DocumentViewActivity
-                viewDocumentIntent.putExtra("Document", docs.get(holder.getAdapterPosition()));
-                context.startActivity(viewDocumentIntent);
+//                Toast.makeText(context, docs.get(holder.getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+                openDocumentViewActivity(holder);
             }
         });
+    }
+
+    private void openDocumentViewActivity(ViewHolder holder) {
+        Intent viewDocumentIntent = new Intent(context, DocumentViewActivity.class);
+        //pass document object to DocumentViewActivity
+        viewDocumentIntent.putExtra("Document", docs.get(holder.getAdapterPosition()));
+        context.startActivity(viewDocumentIntent);
     }
 
     @Override

@@ -145,7 +145,7 @@ public class TranscribeActivity extends AppCompatActivity {
 
         for (Photo photo : photos) {
             Uri locUri = photo.getLocalUri();
-            StorageReference imageRef = storageReference.child(String.format("images/%s/%s", appUser.getUid(), locUri.getLastPathSegment()));
+            StorageReference imageRef = storageReference.child(String.format("images/%s/%s", appUser.getUid(), editTextDocName.getText().toString()));
             UploadTask task = imageRef.putFile(locUri);
             task.addOnCompleteListener(this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -266,7 +266,7 @@ public class TranscribeActivity extends AppCompatActivity {
         @Override
         public void onActivityResult(Boolean result) {
             if (result) {
-                imageViewDoc.setImageURI(uri); //TODO: figure out why there is whitespace above and below image in the scrollview
+                imageViewDoc.setImageURI(uri);
                 Log.i(TAG, "Image saved to: " + uri);
                 Photo photo = new Photo(uri, null, new Date(), null, null);
                 photos.clear();//TODO: photos is cleared every time because we are only doing 1 photo each time for MS1. Reimplement for later.
@@ -285,7 +285,7 @@ public class TranscribeActivity extends AppCompatActivity {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File imageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         try {
-            File result = File.createTempFile(String.format("Specimen_%s", timestamp), ".jpg", imageDir);
+            File result = File.createTempFile(String.format("photograph_%s", editTextDocName.getText().toString()), ".jpg", imageDir);
             currImgPath = result.getAbsolutePath();
             return result;
         } catch (IOException e) {

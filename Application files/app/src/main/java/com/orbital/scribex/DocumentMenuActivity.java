@@ -50,7 +50,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
 
     private RecViewDocsAdapter adapter;
 
-    private ScribexUser appUser;
+    ScribexUser appUser;
     private FirebaseUser user;
 
     private RecyclerView recViewDocs;
@@ -146,6 +146,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     Document document = new Document(name, name, null, readFile(localFile));
+                    document.setOwner(appUser);
                     docs.add(document);
                     Log.d(TAG, String.valueOf(docs.size()));
                     localFile.delete();

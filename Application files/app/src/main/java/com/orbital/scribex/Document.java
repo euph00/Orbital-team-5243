@@ -14,6 +14,7 @@ public class Document implements Serializable {
     private String text;
     private String snippet;
     private String url;
+    private ScribexUser owner;
 
     /**
      * Constructs a java object representing a scanned document.
@@ -29,6 +30,7 @@ public class Document implements Serializable {
         this.text = text;
         this.snippet = text.substring(0, Math.min(text.length(), SNIPPET_LENGTH));
         this.url = null;
+        this.owner = null;
     }
 
     public void setId(String id) {
@@ -77,5 +79,13 @@ public class Document implements Serializable {
 
     public String getUrl() {
         return this.url;
+    }
+
+    public ScribexUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(ScribexUser owner) {
+        this.owner = owner;
     }
 }
