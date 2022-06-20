@@ -112,8 +112,8 @@
 
         <ImageView
             android:id="@+id/redcircle"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@drawable/delete_doc_button"
             app:layout_constraintBottom_toTopOf="@+id/guideline39"
             app:layout_constraintEnd_toStartOf="@+id/guideline14"
@@ -153,20 +153,5 @@
                 />
 
         </androidx.core.widget.NestedScrollView>
-
-
-        <!--            <TextView-->
-        <!--                android:id="@+id/txtDoc"-->
-        <!--                android:layout_width="0dp"-->
-        <!--                android:layout_height="0dp"-->
-        <!--                android:text="TextView"-->
-        <!--                android:textAlignment="center"-->
-        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintHorizontal_bias="0.0"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toTopOf="@+id/guideline40" />-->
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>
