@@ -58,6 +58,7 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="731dp" />
 
+
         <Button
             android:id="@+id/btnUpload"
             android:layout_width="0dp"
@@ -101,6 +102,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.85" />
+
+        <ImageView
+            android:id="@+id/imageViewDoc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline44"
+            app:layout_constraintEnd_toStartOf="@+id/guideline46"
+            app:layout_constraintStart_toStartOf="@+id/guideline45"
+            app:layout_constraintTop_toTopOf="@+id/guideline43"/>
 
         <Button
             android:id="@+id/btnTakePic"
