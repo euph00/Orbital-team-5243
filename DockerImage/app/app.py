@@ -55,6 +55,8 @@ class FBStorage(object):
             self.upload__file(transcribedfile)
             #  Update firestore datatbase
             self.update_database(key)
+            #  Remove entry from QUEUE
+            self.obj_file.delete_field(key)
             
 
 
@@ -71,6 +73,9 @@ class File(object):
         imagedict = queuelst.to_dict()
         return imagedict
 
+    def delete_field(self, key):
+        return self.queue.update({self.database.field_path(key): firestore.DELETE_FIELD})
+
     def get_userid(self):
         return self.userid
 
@@ -83,6 +88,7 @@ class File(object):
             #  convert nparray to bytes for google cloud vision to construct image
             byte = im.tobytes()
         return byte
+        
 
             
 #Singleton object representing connection to database
@@ -173,7 +179,7 @@ def main(userid):
 
 
 if __name__ == "__main__":
-    main("lc6h9J5fkif0iDaGUxZe6IJ6Bq53")
+    main("t68SzYWj9vZHTErjxcFZ2fQxHGH3")
 
 
 
