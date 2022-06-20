@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,8 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,6 +53,7 @@ public class ProfilePageActivity extends AppCompatActivity {
     private Button buttonApplyChanges;
     private Button buttonDeleteAccount;
     private Button btnSignOut;
+    private TextView textViewDelAccWarn;
 
     private String username;
 
@@ -71,6 +75,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         this.buttonApplyChanges = findViewById(R.id.buttonApplyChanges);
         this.buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
         this.btnSignOut = findViewById(R.id.btnSignOut);
+        this.textViewDelAccWarn = findViewById(R.id.textViewDelAcctWarn);
 
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         if (acct != null) {
@@ -141,19 +146,25 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private void deleteAccount() {
         if (user != null) {
-            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "User account deleted");
-                        Toast.makeText(ProfilePageActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
-                        openMainActivity();
-                    } else {
-                        Log.e(TAG, "Failed to delete account", task.getException());
-                    }
+                public void onSuccess(Void unused) {
+                    Log.d(TAG, "User account deleted");
+                    Toast.makeText(ProfilePageActivity.this, "Account deleted", Toast.LENGTH_LONG).show();
+                    openMainActivity();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    showWarning();
+                    Log.e(TAG, "failed delete account", e);
                 }
             });
         }
+    }
+
+    private void showWarning() {
+        textViewDelAccWarn.setVisibility(View.VISIBLE);
     }
 
     private void openMainActivity() {
