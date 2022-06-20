@@ -42,20 +42,19 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     private static final String TAG = "EditProfileActivity";
 
+    //user
     private ScribexUser appUser;
     private FirebaseUser user;
-
     private FirebaseFirestore firestore;
     private StorageReference storageReference;
 
+    //view
     private ImageView imgViewProfilePic;
     private EditText editTextUserName;
     private Button buttonApplyChanges;
     private Button buttonDeleteAccount;
     private Button btnSignOut;
     private TextView textViewDelAccWarn;
-
-    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +64,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_profile_page);
 
+        //user specific elements
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -76,7 +76,6 @@ public class ProfilePageActivity extends AppCompatActivity {
         this.buttonDeleteAccount = findViewById(R.id.buttonDeleteAccount);
         this.btnSignOut = findViewById(R.id.btnSignOut);
         this.textViewDelAccWarn = findViewById(R.id.textViewDelAcctWarn);
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         if (acct != null) {
             Uri url = Uri.parse(acct.getPhotoUrl().toString().replace("s96-c", "s400-c"));
@@ -85,6 +84,7 @@ public class ProfilePageActivity extends AppCompatActivity {
             Log.d(TAG, "Google account was null");
         }
 
+        //retrieve ScribexUser
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
 
@@ -122,6 +122,10 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the profile username with user's input, syncs to firebase
+     * @param input Desired username obtained from editTextUserName
+     */
     private void updateProfileName(String input) {
         UserProfileChangeRequest nameUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(input)
@@ -144,6 +148,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         startActivity(documentMenuActivityIntent);
     }
 
+    /**
+     * Attempts to delete firebase account authorised by google login.
+     * If it fails by timeout of the sign in, user will be prompted to
+     * log out and log back in to resolve the error.
+     */
     private void deleteAccount() {
         if (user != null) {
             user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -163,6 +172,9 @@ public class ProfilePageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Prompts user to log out and log back in.
+     */
     private void showWarning() {
         textViewDelAccWarn.setVisibility(View.VISIBLE);
     }

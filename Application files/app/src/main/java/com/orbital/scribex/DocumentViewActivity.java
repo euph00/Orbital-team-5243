@@ -25,20 +25,24 @@ import com.google.firebase.storage.StorageReference;
 
 public class DocumentViewActivity extends AppCompatActivity {
 
-    private Button btnDelete;
+    private static final String TAG = "DocumentViewActivity";
 
-    private TextView txtName;
-    private TextView txtDoc;
-
-    private FirebaseUser user;
-    private ScribexUser appUser;
-
+    //misc
     private Document doc;
 
+    //user
+    private FirebaseUser user;
+    private ScribexUser appUser;
     private FirebaseFirestore firestore;
     private FirebaseStorage firebaseStorage;
 
-    private static final String TAG = "DocumentViewActivity";
+    //view
+    private Button btnDelete;
+    private TextView txtName;
+    private TextView txtDoc;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +52,11 @@ public class DocumentViewActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_document_view);
 
+        //get Document from DocumentMenuActivity that called this activity
         Intent intent = this.getIntent();
         doc = (Document) intent.getSerializableExtra("Document");
 
+        //user specific elements
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -60,7 +66,6 @@ public class DocumentViewActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btnDelete);
         txtName = findViewById(R.id.txtName);
         txtDoc = findViewById(R.id.txtDoc);
-
         txtName.setText(doc.getName());
         txtDoc.setText(doc.getText());
 
@@ -68,39 +73,24 @@ public class DocumentViewActivity extends AppCompatActivity {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                scrubFromFirebase(doc);
+                scrubFromFirebase();
             }
         });
     }
 
-    private void scrubFromFirebase(Document doc) {
-        //must get imageUrl before starting deletes, otherwise will race
-        firestore.collection("users")
-                .document(appUser.getUid())
-                .collection("uploads")
-                .document(doc.getName())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot dcs = task.getResult();
-                            String imageUrl = dcs.getString("remoteUri");
-                            Log.d(TAG, imageUrl);
-
-                            //these 4 can happen in parallel
-                            deleteFromUploads();
-                            deleteFromTranscribed();
-                            deleteFromStorage();
-
-                        } else {
-                            Log.e(TAG, "failed to get doc", task.getException());
-                        }
-                    }
-                });
-
+    /**
+     * Deletes references of this document from firestore and the actual image and
+     * txt files from firebase cloud storage.
+     */
+    private void scrubFromFirebase() {
+        deleteFromUploads();
+        deleteFromTranscribed();
+        deleteFromStorage();
     }
 
+    /**
+     * Deletes the txt file and the image file from cloud storage
+     */
     private void deleteFromStorage() {
         String name = doc.getId();
         StorageReference txtRef = firebaseStorage
@@ -116,6 +106,7 @@ public class DocumentViewActivity extends AppCompatActivity {
                 }
             }
         });
+
         StorageReference imgRef = firebaseStorage
                 .getReferenceFromUrl("gs://scribex-1653106340524.appspot.com")
                 .child(String.format("/images/%s/%s", appUser.getUid(), name));
@@ -131,6 +122,9 @@ public class DocumentViewActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Deletes the reference of the image from firestore database
+     */
     private void deleteFromUploads() {
         firestore.collection("users")
                 .document(appUser.getUid())
@@ -149,6 +143,9 @@ public class DocumentViewActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Deletes the reference of the txt from firestore database
+     */
     private void deleteFromTranscribed() {
         firestore.collection("users")
                 .document(appUser.getUid())

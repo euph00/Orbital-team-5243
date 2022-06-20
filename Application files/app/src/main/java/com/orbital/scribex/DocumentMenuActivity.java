@@ -48,19 +48,22 @@ public class DocumentMenuActivity extends AppCompatActivity {
 
     private static final String TAG = "DocumentMenuActivity";
 
+    //misc
     private RecViewDocsAdapter adapter;
 
-    ScribexUser appUser;
+    //user
+    private ScribexUser appUser;
     private FirebaseUser user;
+    private FirebaseFirestore firestore;
+    private FirebaseStorage firebaseStorage;
 
+    //view
     private RecyclerView recViewDocs;
-
     private Button btnNewDoc;
     private Button btnEditProfile;
     private CircleImageView profileImage;
 
-    private FirebaseFirestore firestore;
-    private FirebaseStorage firebaseStorage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_document_menu);
 
+        //user specific elements
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -79,10 +83,9 @@ public class DocumentMenuActivity extends AppCompatActivity {
         btnNewDoc = findViewById(R.id.btnNewDoc);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         profileImage = findViewById(R.id.profileimage);
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         if (acct != null) {
-            Picasso.with(this).load(acct.getPhotoUrl()).into(profileImage);
+            Picasso.with(this).load(acct.getPhotoUrl()).into(profileImage); //set profile pic icon
             Log.d(TAG, "done setting profile pic");
         } else {
             Log.d(TAG, "Account was null");
@@ -106,13 +109,11 @@ public class DocumentMenuActivity extends AppCompatActivity {
         //retrieve ScribexUser
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
-//        Toast.makeText(this, appUser.getUid(), Toast.LENGTH_LONG).show();
 
         //recyclerview code, updates the List docs in realtime from firestore
         adapter = new RecViewDocsAdapter(this);
         recViewDocs.setAdapter(adapter);
         recViewDocs.setLayoutManager(new LinearLayoutManager(this));
-
         List<Document> docs = new ArrayList<>();
         firestore.collection("users")
                 .document(appUser.getUid())
@@ -135,6 +136,11 @@ public class DocumentMenuActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Fetches content of relevant txt file from firebase and populates metadata
+     * @param doc   as provided by the QuerySnapshot value triggered on event
+     * @param docs  List of documents to be displayed in the recyclerview
+     */
     private void processQuery(QueryDocumentSnapshot doc, List<Document> docs) {
         String name = doc.getId();
         StorageReference ref = firebaseStorage
@@ -151,28 +157,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
                     Log.d(TAG, String.valueOf(docs.size()));
                     localFile.delete();
                     adapter.setDocs(docs);
-                    firestore.collection("users")
-                            .document(appUser.getUid())
-                            .collection("uploads")
-                            .document(document.getName())
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot dcs = task.getResult();
-                                        String urlString = dcs.getString("remoteUri");
-                                        if (urlString != null) {
-                                            Uri url = Uri.parse(urlString);
-                                            document.setUrl(url.toString());
-                                            adapter.setDocs(docs);
-                                        }
-
-                                    } else {
-                                        Log.e(TAG, "get url failed", task.getException());
-                                    }
-                                }
-                            });
+                    setRemUri(document, docs);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -185,6 +170,41 @@ public class DocumentMenuActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Populates the remote URI metafield of document object
+     * @param document  relevant Document object to be updated
+     * @param docs  List of documents to be displayed in recyclerview
+     */
+    private void setRemUri(Document document, List<Document> docs) {
+        firestore.collection("users")
+                .document(appUser.getUid())
+                .collection("uploads")
+                .document(document.getName())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot dcs = task.getResult();
+                            String urlString = dcs.getString("remoteUri");
+                            if (urlString != null) {
+                                Uri url = Uri.parse(urlString);
+                                document.setUrl(url.toString());
+                                adapter.setDocs(docs);
+                            }
+
+                        } else {
+                            Log.e(TAG, "get url failed", task.getException());
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Reads txt file into a String
+     * @param file  File object, the txt file to be read
+     * @return  String of the file contents
+     */
     private String readFile(File file) {
         try {
             Scanner sc = new Scanner(file);

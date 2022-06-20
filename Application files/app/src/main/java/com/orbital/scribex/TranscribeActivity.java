@@ -53,16 +53,17 @@ public class TranscribeActivity extends AppCompatActivity {
 
     private static final String TAG = "TranscribeActivity";
 
-    private FirebaseFirestore firestore;
-    private StorageReference storageReference;
-
-    private ScribexUser appUser;
-
+    //misc
     private List<Photo> photos;
-
     private String currImgPath;
     private Uri uri = null;
 
+    //user
+    private FirebaseFirestore firestore;
+    private StorageReference storageReference;
+    private ScribexUser appUser;
+
+    //view
     private EditText editTextDocName;
     private Button btnTakePic;
     private Button btnUpload;
@@ -77,22 +78,26 @@ public class TranscribeActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_transcribe);
 
+        //user specific elements
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
+        //retrieve ScribexUser
         Intent intent = this.getIntent();
         appUser = (ScribexUser) intent.getSerializableExtra("user");
 
+        //misc inits
         photos = new ArrayList<>();
-
         currImgPath = "";
 
+        //init view elements
         editTextDocName = findViewById(R.id.editTextDocName);
         btnTakePic = findViewById(R.id.btnTakePic);
         btnUpload = findViewById(R.id.btnUpload);
         imageViewDoc = findViewById(R.id.imageViewDoc);
         textViewWarning = findViewById(R.id.textViewWarning);
 
+        //onClickListeners for buttons
         btnTakePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,29 +110,41 @@ public class TranscribeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String newDocName = editTextDocName.getText().toString();
-                firestore.collection("users")
-                        .document(appUser.getUid())
-                        .collection("uploads")
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    QuerySnapshot docs = task.getResult();
-                                    for (QueryDocumentSnapshot doc : docs) {
-                                        if (doc.getId().equals(newDocName)) {
-                                            showWarningNameCollision();
-                                            return;
-                                        }
-                                    }
-                                    upload();
-                                }
-                            }
-                        });
+                collisionCheck(newDocName);
             }
         });
     }
 
+    /**
+     * Checks for naming collisions with previously uploaded docs, shows warning
+     * and rejects if there is a name collision
+     * @param newDocName    the desired new document name
+     */
+    private void collisionCheck(String newDocName) {
+        firestore.collection("users")
+                .document(appUser.getUid())
+                .collection("uploads")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot docs = task.getResult();
+                            for (QueryDocumentSnapshot doc : docs) {
+                                if (doc.getId().equals(newDocName)) {
+                                    showWarningNameCollision();
+                                    return;
+                                }
+                            }
+                            upload();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * warns user about naming collision of new doc with and existing one
+     */
     private void showWarningNameCollision() {
         textViewWarning.setVisibility(View.VISIBLE);
     }
@@ -152,19 +169,28 @@ public class TranscribeActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         Task<Uri> downloadUrl = imageRef.getDownloadUrl();
-                        downloadUrl.addOnSuccessListener(TranscribeActivity.this, new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri remoteUri) {
-                                photo.setRemoteUri(remoteUri);
-                                updatePhotoDatabase(photo);
-                            }
-                        });
+                        updatePhotoRemoteUri(downloadUrl, photo);
                     } else {
                         Log.e(TAG, "upload failed");
                     }
                 }
             });
         }
+    }
+
+    /**
+     * Updates the metadata of the photo object with its URL on firebase cloud storage
+     * @param downloadUrl   the task to retrieve remote url
+     * @param photo Photo object to be updated
+     */
+    private void updatePhotoRemoteUri(Task<Uri> downloadUrl, Photo photo) {
+        downloadUrl.addOnSuccessListener(TranscribeActivity.this, new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri remoteUri) {
+                photo.setRemoteUri(remoteUri);
+                updatePhotoDatabase(photo);
+            }
+        });
     }
 
     /**
@@ -182,30 +208,15 @@ public class TranscribeActivity extends AppCompatActivity {
                     String name = editTextDocName.getText().toString();
                     if (name.equals("")) name = photo.getId();
                     photo.setName(name);
+
                     firestore.collection("users")
                             .document(appUser.getUid())
                             .collection("uploads")
                             .document(photo.getName())
                             .set(photo);
-                    firestore.collection("users")
-                            .document(appUser.getUid())
-                            .collection("uploads")
-                            .document("QUEUE")
-                            .update(photo.getName(), photo.getRemoteUri()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        String url = appUser.getUid();
-                                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                                        executor.execute(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                sendRequest(url);
-                                            }
-                                        });
-                                    }
-                                }
-                            });
+
+                    updateQueuePingServer(photo);
+
                     firestore.collection("users")
                             .document(appUser.getUid())
                             .collection("uploads")
@@ -217,6 +228,32 @@ public class TranscribeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * Updates the QUEUE on firestore, sends request to backend to begin transcription
+     * @param photo photo object to be transcribed
+     */
+    private void updateQueuePingServer(Photo photo) {
+        firestore.collection("users")
+                .document(appUser.getUid())
+                .collection("uploads")
+                .document("QUEUE")
+                .update(photo.getName(), photo.getRemoteUri()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            String url = appUser.getUid();
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
+                            executor.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    sendRequest(url);
+                                }
+                            });
+                        }
+                    }
+                });
     }
 
     /**
@@ -294,6 +331,10 @@ public class TranscribeActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * sends request to backend to begin transcription
+     * @param req   request id, currently implemented as user id
+     */
     void sendRequest(String req) {
         try {
             URL url = new URL("http://34.142.160.9/app/" + req);

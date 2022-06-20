@@ -78,32 +78,29 @@ public class MainActivity extends AppCompatActivity {
 
     //ActivityResultLauncher is replacement for deprecated startActivityForResult method.
     //Custom callback is defined in the anon inner class, no longer uses old default callback.
-    private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+    private ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
 
             int rc = result.getResultCode();
 
             if (rc == Activity.RESULT_OK) { //google sign in completed
-//                Toast.makeText(MainActivity.this, "Google result OK", Toast.LENGTH_SHORT).show();
                 //retrieve result of external activity (google one touch activity)
                 Intent intent = result.getData();
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
                 try {
                     //Google sign in was successful, authenticate with firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
-//                    Toast.makeText(MainActivity.this, "Authenticate with firebase", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
                     //Google sign in failed
-//                    Toast.makeText(MainActivity.this, "Google sign in failed", Toast.LENGTH_LONG).show();
                     Log.w(TAG, "Google sign in failed", e);
                 }
             } else if (rc == Activity.RESULT_CANCELED) { //google sign in aborted
                 Toast.makeText(MainActivity.this, "Google Sign In cancelled.", Toast.LENGTH_LONG).show();
             } else { //all other cases, refer to error code on screen
-//                Toast.makeText(MainActivity.this, "Other error: " + rc, Toast.LENGTH_LONG).show();
             }
         }
     });
@@ -127,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { //firebase authorised
-//                            Toast.makeText(MainActivity.this, "Firebase authentication OK", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             saveAppUser(new ScribexUser(user.getUid()));
@@ -147,16 +143,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private void saveAppUser(ScribexUser scribexUser) {
         firestore = FirebaseFirestore.getInstance();
-        firestore.collection("users").document(scribexUser.getUid()).set(scribexUser);
-        firestore.collection("users").document(scribexUser.getUid()).collection("uploads").document("QUEUE").set(new HashMap<String,String>());
-//        firestore.collection("users").document(scribexUser.getUid()).collection("transcribed").document("null").delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                if (task.isSuccessful()) {
-//                    Log.d(TAG, "create transcribed success");
-//                }
-//            }
-//        });
+        firestore.collection("users")
+                .document(scribexUser.getUid())
+                .set(scribexUser);
+        firestore.collection("users")
+                .document(scribexUser.getUid())
+                .collection("uploads")
+                .document("QUEUE")
+                .set(new HashMap<String,String>());
     }
 
     /**
