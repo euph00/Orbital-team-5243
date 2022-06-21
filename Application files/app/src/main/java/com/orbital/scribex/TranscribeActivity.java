@@ -131,6 +131,7 @@ public class TranscribeActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             QuerySnapshot docs = task.getResult();
                             for (QueryDocumentSnapshot doc : docs) {
+                                //should there be a collision, warn the user and terminate
                                 if (doc.getId().equals(newDocName)) {
                                     showWarningNameCollision();
                                     return;
