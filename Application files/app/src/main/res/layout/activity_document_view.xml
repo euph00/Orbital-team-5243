@@ -110,28 +110,19 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.87" />
 
-        <ImageView
-            android:id="@+id/redcircle"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/delete_doc_button"
-            app:layout_constraintBottom_toTopOf="@+id/guideline39"
-            app:layout_constraintEnd_toStartOf="@+id/guideline14"
-            app:layout_constraintStart_toStartOf="@+id/guideline15"
-            app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
-        <Button
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/btnDelete"
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:background="@drawable/transparent_button"
-            android:fontFamily="sans-serif-black"
-            android:text="Delete"
-            android:textSize="8dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline39"
             app:layout_constraintEnd_toStartOf="@+id/guideline14"
             app:layout_constraintStart_toStartOf="@+id/guideline15"
-            app:layout_constraintTop_toTopOf="@+id/guideline5" />
+            app:layout_constraintTop_toTopOf="@+id/guideline5"
+            android:src="@drawable/ic_baseline_delete_outline_24"
+            android:background="@drawable/delete_doc_button"
+            />
+
 
 
         <!--Display Text-->
