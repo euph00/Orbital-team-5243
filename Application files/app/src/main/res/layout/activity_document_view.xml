@@ -112,7 +112,7 @@
 
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/btnDelete"
+            android:id="@+id/btnDeletebg"
             android:layout_width="45dp"
             android:layout_height="45dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline39"
@@ -123,6 +123,17 @@
             android:background="@drawable/delete_doc_button"
             />
 
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline39"
+            app:layout_constraintEnd_toStartOf="@+id/guideline14"
+            app:layout_constraintStart_toStartOf="@+id/guideline15"
+            app:layout_constraintTop_toTopOf="@+id/guideline5"
+            android:background="@drawable/transparent_button"
+            />
+        
 
 
         <!--Display Text-->
