@@ -91,7 +91,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNewDoc"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -99,6 +99,8 @@
             android:fontFamily="sans-serif-black"
             android:text="Transcribe new image"
             android:textSize="16sp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

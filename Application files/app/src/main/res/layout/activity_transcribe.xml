@@ -59,7 +59,7 @@
             app:layout_constraintGuide_begin="731dp" />
 
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnUpload"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -67,6 +67,8 @@
             android:fontFamily="sans-serif-black"
             android:text="Upload"
             android:textSize="16sp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline42"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

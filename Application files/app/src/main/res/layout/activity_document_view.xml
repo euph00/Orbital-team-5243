@@ -133,7 +133,7 @@
             app:layout_constraintTop_toTopOf="@+id/guideline5"
             android:background="@drawable/transparent_button"
             />
-        
+
 
 
         <!--Display Text-->
