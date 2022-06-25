@@ -224,6 +224,7 @@ public class TranscribeActivity extends AppCompatActivity {
                             .document(photo.getId())
                             .delete();
                     Toast.makeText(TranscribeActivity.this, "Upload image success.", Toast.LENGTH_SHORT).show();
+                    openDocumentMenuActivity();
                 } else {
                     Log.e(TAG, "error updating photo data");
                 }
@@ -347,6 +348,11 @@ public class TranscribeActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    private void openDocumentMenuActivity() {
+        Intent documentMenuIntent = new Intent(this, DocumentMenuActivity.class);
+        documentMenuIntent.putExtra("user", appUser);
+        startActivity(documentMenuIntent);
     }
 }
