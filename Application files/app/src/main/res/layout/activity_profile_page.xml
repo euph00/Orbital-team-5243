@@ -147,7 +147,8 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline30"
             app:layout_constraintStart_toStartOf="@+id/guideline29"
             app:layout_constraintTop_toTopOf="@+id/guideline23"
-            android:background="@drawable/grepbgprofilepic" />
+            android:src="@drawable/grepbgprofilepic"
+            />
 
 
         <TextView
