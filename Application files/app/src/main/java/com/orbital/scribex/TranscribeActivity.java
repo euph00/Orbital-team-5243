@@ -6,13 +6,16 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -101,8 +104,7 @@ public class TranscribeActivity extends AppCompatActivity {
         btnTakePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto();
-                btnTakePic.setVisibility(View.INVISIBLE);
+                pickImageSource();
             }
         });
 
@@ -114,6 +116,43 @@ public class TranscribeActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void pickImageSource() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Upload image");
+        alertDialogBuilder.setMessage("Pick an image source");
+        alertDialogBuilder.setPositiveButton("Take Photo", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                takePhoto();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("Choose from Gallery", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                pickFromGallery();
+            }
+        });
+        alertDialogBuilder.create().show();
+    }
+
+    private void pickFromGallery() {
+        getImage.launch("image/*");
+    }
+
+    ActivityResultLauncher<String> getImage = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            new ActivityResultCallback<Uri>() {
+        @Override
+        public void onActivityResult(Uri result) {
+            if (result != null) {
+                uri = result;
+                updateDisplayPhoto();
+            } else {
+                Log.e(TAG, "no image uri");
+            }
+        }
+    });
 
     /**
      * Checks for naming collisions with previously uploaded docs, shows warning
@@ -305,16 +344,24 @@ public class TranscribeActivity extends AppCompatActivity {
         @Override
         public void onActivityResult(Boolean result) {
             if (result) {
-                imageViewDoc.setImageURI(uri);
-                Log.i(TAG, "Image saved to: " + uri);
-                Photo photo = new Photo(uri, null, new Date(), null, null);
-                photos.clear();//TODO: photos is cleared every time because we are only doing 1 photo each time for MS1. Reimplement for later.
-                photos.add(photo);
+                updateDisplayPhoto();
             } else {
                 Log.e(TAG, "Image not saved. " + uri);
             }
         }
     });
+
+    private void updateDisplayPhoto() {
+        if (uri == null) {
+            Log.e(TAG, "uri is null!");
+        }
+        imageViewDoc.setImageURI(uri);
+        Log.i(TAG, "Image saved to: " + uri);
+        Photo photo = new Photo(uri, null, new Date(), null, null);
+        photos.clear();
+        photos.add(photo);
+        btnTakePic.setVisibility(View.INVISIBLE);
+    }
 
     /**
      * Writes the taken picture to storage.

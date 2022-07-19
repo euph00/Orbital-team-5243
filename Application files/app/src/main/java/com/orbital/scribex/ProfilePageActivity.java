@@ -1,5 +1,6 @@
 package com.orbital.scribex;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -117,9 +119,28 @@ public class ProfilePageActivity extends AppCompatActivity {
         buttonDeleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                confirmDeleteAccount();
+            }
+        });
+    }
+
+    private void confirmDeleteAccount() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Confirm account deletion");
+        alertDialogBuilder.setMessage("You will lose all your documents stored in the app. This action is irreversible.");
+        alertDialogBuilder.setPositiveButton("Confirm Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 deleteAccount();
             }
         });
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+        alertDialogBuilder.create().show();
     }
 
     /**

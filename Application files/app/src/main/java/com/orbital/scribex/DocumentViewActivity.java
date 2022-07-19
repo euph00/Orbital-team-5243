@@ -3,6 +3,9 @@ package com.orbital.scribex;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,8 +44,7 @@ public class DocumentViewActivity extends AppCompatActivity {
     private Button btnDelete;
     private TextView txtName;
     private TextView txtDoc;
-
-
+    private Button btnCopy;
 
 
     @Override
@@ -66,6 +69,7 @@ public class DocumentViewActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btnDelete);
         txtName = findViewById(R.id.txtName);
         txtDoc = findViewById(R.id.txtDoc);
+        btnCopy = findViewById(R.id.btnCopy);
         txtName.setText(doc.getName());
         txtDoc.setText(doc.getText());
 
@@ -76,6 +80,23 @@ public class DocumentViewActivity extends AppCompatActivity {
                 scrubFromFirebase();
             }
         });
+
+        btnCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copyTextToClip();
+            }
+        });
+    }
+
+    /**
+     * Copies document text to clipboard. Called by the onclick of the copy button.
+     */
+    private void copyTextToClip() {
+        ClipboardManager cpm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("document text", doc.getText());
+        cpm.setPrimaryClip(clip);
+        Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_SHORT).show();
     }
 
     /**
