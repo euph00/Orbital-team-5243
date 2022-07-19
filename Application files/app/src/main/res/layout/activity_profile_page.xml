@@ -131,7 +131,7 @@
             android:gravity="center"
             android:text="Profile"
             android:textColor="#FFFFFF"
-            android:textSize="30sp"
+            android:textSize="@dimen/_26ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline19"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -143,26 +143,12 @@
             android:id="@+id/imgViewProfilePic"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:src="@drawable/grepbgprofilepic"
             app:layout_constraintBottom_toTopOf="@+id/guideline24"
             app:layout_constraintEnd_toStartOf="@+id/guideline30"
             app:layout_constraintStart_toStartOf="@+id/guideline29"
-            app:layout_constraintTop_toTopOf="@+id/guideline23"
-            android:src="@drawable/grepbgprofilepic"
-            />
+            app:layout_constraintTop_toTopOf="@+id/guideline23" />
 
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="5dp"
-            android:text="Username:"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline26"
-            app:layout_constraintEnd_toStartOf="@+id/guideline33"
-            app:layout_constraintStart_toStartOf="@id/guideline31"
-            app:layout_constraintTop_toTopOf="@id/guideline25" />
 
         <EditText
             android:id="@+id/editTextUserName"
@@ -171,11 +157,11 @@
             android:ems="10"
             android:inputType="textPersonName"
             android:text="Name"
-            android:textSize="20sp"
+            android:textSize="@dimen/_15ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline26"
-            app:layout_constraintEnd_toStartOf="@+id/guideline34"
+            app:layout_constraintEnd_toStartOf="@+id/guideline30"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/guideline33"
+            app:layout_constraintStart_toStartOf="@+id/guideline29"
             app:layout_constraintTop_toTopOf="@+id/guideline25"
             app:layout_constraintVertical_bias="0.0" />
 
@@ -185,10 +171,10 @@
             android:layout_height="0dp"
             android:backgroundTint="#000000"
             android:fontFamily="sans-serif-black"
-            android:text="Save Changes"
-            android:textSize="16sp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:text="Save Changes"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline21"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -201,6 +187,7 @@
             android:layout_height="0dp"
             android:backgroundTint="#FF0000"
             android:text="Sign Out"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline28"
             app:layout_constraintEnd_toStartOf="@+id/guideline30"
             app:layout_constraintHorizontal_bias="0.75"
@@ -214,6 +201,7 @@
             android:layout_height="0dp"
             android:backgroundTint="#FF0000"
             android:text="Delete Account"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline35"
             app:layout_constraintEnd_toStartOf="@+id/guideline30"
             app:layout_constraintHorizontal_bias="0.75"

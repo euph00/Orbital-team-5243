@@ -10,6 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/guideline17"
+            android:weightSum="3"
+            android:orientation="horizontal"
+            android:background="#ff000000"
+            />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recViewDocs"
             android:layout_width="0dp"
@@ -83,7 +93,7 @@
             android:gravity="center"
             android:text="Documents"
             android:textColor="#FFFFFF"
-            android:textSize="30sp"
+            android:textSize="@dimen/_26ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline17"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -98,7 +108,7 @@
             android:backgroundTint="#000000"
             android:fontFamily="sans-serif-black"
             android:text="Transcribe new image"
-            android:textSize="16sp"
+            android:textSize="@dimen/_13ssp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline12"
@@ -110,8 +120,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profileimage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/_40ssp"
+            android:layout_height="@dimen/_40ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline13"
             app:layout_constraintEnd_toStartOf="@+id/guideline15"
             app:layout_constraintStart_toStartOf="@+id/guideline14"
@@ -121,8 +131,8 @@
 
         <Button
             android:id="@+id/btnEditProfile"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/_40ssp"
+            android:layout_height="@dimen/_40ssp"
             app:layout_constraintBottom_toTopOf="@+id/guideline13"
             app:layout_constraintEnd_toStartOf="@+id/guideline15"
             app:layout_constraintStart_toStartOf="@+id/guideline14"
