@@ -117,7 +117,10 @@
             app:layout_constraintStart_toStartOf="@+id/guideline15"
             app:layout_constraintTop_toTopOf="@+id/guideline5"
             android:src="@drawable/ic_baseline_delete_forever_24"
-            android:background="@drawable/delete_doc_button" />
+            android:background="@drawable/delete_doc_button"
+            android:scaleX="1"
+            android:scaleY="1"
+            />
 
         <Button
             android:id="@+id/btnDelete"

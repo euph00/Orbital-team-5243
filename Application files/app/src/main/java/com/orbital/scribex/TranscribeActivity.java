@@ -386,7 +386,7 @@ public class TranscribeActivity extends AppCompatActivity {
      */
     void sendRequest(String req) {
         try {
-            URL url = new URL("http://34.142.160.9/app/" + req);
+            URL url = new URL("http://34.143.147.223/app/" + req);
             URLConnection conn = url.openConnection();
             conn.connect();
             Object content = conn.getContent();

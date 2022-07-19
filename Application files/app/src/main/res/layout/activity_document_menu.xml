@@ -111,6 +111,7 @@
             android:textSize="@dimen/_13ssp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@+id/guideline12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

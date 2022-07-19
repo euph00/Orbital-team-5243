@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -58,6 +60,10 @@ public class ProfilePageActivity extends AppCompatActivity {
     private Button btnSignOut;
     private TextView textViewDelAccWarn;
 
+    // animations
+    private Animation scaleDown;
+    private Animation scaleUp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +76,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        //init anim elements
+        scaleUp = AnimationUtils.loadAnimation(this,R.anim.scaleup);
+        scaleDown = AnimationUtils.loadAnimation(this,R.anim.scaledown);
+
 
         //init view elements
         this.imgViewProfilePic = findViewById(R.id.imgViewProfilePic);
@@ -104,6 +115,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnAnimation(btnSignOut);
                 signOut();
             }
         });
@@ -119,6 +131,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         buttonDeleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnAnimation(buttonDeleteAccount);
                 confirmDeleteAccount();
             }
         });
@@ -203,6 +216,11 @@ public class ProfilePageActivity extends AppCompatActivity {
     private void openMainActivity() {
         Intent mainActivityIntent = new Intent(ProfilePageActivity.this, MainActivity.class);
         startActivity(mainActivityIntent);
+    }
+    // button animation
+    private void btnAnimation(View v) {
+        v.startAnimation(scaleDown);
+        v.startAnimation(scaleUp);
     }
 
     /**
