@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -74,6 +75,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
     private Boolean notNow = false;
     private Rect rect;    // Variable rect to hold the bounds of the view
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,22 +107,9 @@ public class DocumentMenuActivity extends AppCompatActivity {
             Log.d(TAG, "Account was null");
         }
 
-
-//        btnEditProfile.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction()==MotionEvent.ACTION_DOWN){
-//                    profileImage.startAnimation(scaleDown);
-//                }else if (event.getAction()==MotionEvent.Ac){
-//                    profileImage.startAnimation(scaleUp);
-//                    openProfilePageActivity();
-//                }
-//                return true;
-//            }
-//        });
-
-
+        //onClickListeners for buttons
         btnEditProfile.setOnTouchListener(new View.OnTouchListener(){
+            @SuppressLint("ClickableViewAccessibility") //TODO: this needs to happen because of sussy jank implementation of our buttons
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
@@ -145,12 +134,10 @@ public class DocumentMenuActivity extends AppCompatActivity {
                             notNow = true; //cancel button press the next time
                         }
                 }
-
                 return true;
             }
-            });
+        });
 
-//        onClickListeners for buttons
         btnNewDoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,14 +145,6 @@ public class DocumentMenuActivity extends AppCompatActivity {
                 openTranscribeActivity();
             }
         });
-
-//        btnEditProfile.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                btnAnimation(profileImage);
-//                openProfilePageActivity();
-//            }
-//        });
 
         //retrieve ScribexUser
         Intent intent = this.getIntent();
