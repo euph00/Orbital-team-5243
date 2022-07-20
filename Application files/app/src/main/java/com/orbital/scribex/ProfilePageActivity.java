@@ -41,6 +41,8 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URI;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ProfilePageActivity extends AppCompatActivity {
 
@@ -55,9 +57,9 @@ public class ProfilePageActivity extends AppCompatActivity {
     //view
     private ImageView imgViewProfilePic;
     private EditText editTextUserName;
-    private Button buttonApplyChanges;
-    private Button buttonDeleteAccount;
-    private Button btnSignOut;
+    private CustomAnimatedButton buttonApplyChanges;
+    private CustomAnimatedButton buttonDeleteAccount;
+    private CustomAnimatedButton btnSignOut;
     private TextView textViewDelAccWarn;
 
     // animations
@@ -76,6 +78,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        Supplier<String> userNameSupplier = () -> editTextUserName.getText().toString();
 
         //init anim elements
         scaleUp = AnimationUtils.loadAnimation(this,R.anim.scaleup);
@@ -112,29 +115,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         }
 
         //OnClickListeners
-        btnSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnAnimation(btnSignOut);
-                signOut();
-            }
-        });
+        btnSignOut.setAction(this::signOut);
 
-        buttonApplyChanges.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newUsername = editTextUserName.getText().toString();
-                updateProfileName(newUsername);
-            }
-        });
+        buttonApplyChanges.setAction(() -> updateProfileName(userNameSupplier));
 
-        buttonDeleteAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnAnimation(buttonDeleteAccount);
-                confirmDeleteAccount();
-            }
-        });
+        buttonDeleteAccount.setAction(this::deleteAccount);
     }
 
     private void confirmDeleteAccount() {
@@ -158,9 +143,10 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     /**
      * Updates the profile username with user's input, syncs to firebase
-     * @param input Desired username obtained from editTextUserName
+     * @param supp username supplier that evaluates the value of edittextusername lazily
      */
-    private void updateProfileName(String input) {
+    private void updateProfileName(Supplier<String> supp) {
+        String input = supp.get();
         UserProfileChangeRequest nameUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(input)
                 .build();

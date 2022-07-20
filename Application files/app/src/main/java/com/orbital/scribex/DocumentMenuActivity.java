@@ -65,7 +65,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
 
     //view
     private RecyclerView recViewDocs;
-    private Button btnNewDoc;
+    private CustomAnimatedButton btnNewDoc;
     private Button btnEditProfile;
     private CircleImageView profileImage;
 
@@ -138,13 +138,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
             }
         });
 
-        btnNewDoc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnAnimation(btnNewDoc);
-                openTranscribeActivity();
-            }
-        });
+        btnNewDoc.setAction(this::openTranscribeActivity);
 
         //retrieve ScribexUser
         Intent intent = this.getIntent();

@@ -115,7 +115,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
 
-        <com.google.android.material.button.MaterialButton
+        <com.orbital.scribex.CustomAnimatedButton
             android:id="@+id/btnNewDoc"
             android:layout_width="0dp"
             android:layout_height="0dp"
