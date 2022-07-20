@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 public class TranscribeActivity extends AppCompatActivity {
 
@@ -69,7 +70,7 @@ public class TranscribeActivity extends AppCompatActivity {
     //view
     private EditText editTextDocName;
     private Button btnTakePic;
-    private Button btnUpload;
+    private CustomAnimatedButton btnUpload;
     private ImageView imageViewDoc;
     private TextView textViewWarning;
 
@@ -84,6 +85,7 @@ public class TranscribeActivity extends AppCompatActivity {
         //user specific elements
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
+        Supplier<String> docNameSupplier = () -> editTextDocName.getText().toString();
 
         //retrieve ScribexUser
         Intent intent = this.getIntent();
@@ -108,13 +110,7 @@ public class TranscribeActivity extends AppCompatActivity {
             }
         });
 
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newDocName = editTextDocName.getText().toString();
-                collisionCheck(newDocName);
-            }
-        });
+        btnUpload.setAction(() -> collisionCheck(docNameSupplier));
     }
 
     private void pickImageSource() {
@@ -157,9 +153,10 @@ public class TranscribeActivity extends AppCompatActivity {
     /**
      * Checks for naming collisions with previously uploaded docs, shows warning
      * and rejects if there is a name collision
-     * @param newDocName    the desired new document name
+     * @param docNameSupplier   supplier that lazily evaluates the desired document name
      */
-    private void collisionCheck(String newDocName) {
+    private void collisionCheck(Supplier<String> docNameSupplier) {
+        String newDocName = docNameSupplier.get();
         firestore.collection("users")
                 .document(appUser.getUid())
                 .collection("uploads")
@@ -199,7 +196,7 @@ public class TranscribeActivity extends AppCompatActivity {
             Toast.makeText(this, "Please take a picture first", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        Toast.makeText(this, "Upload in progress...", Toast.LENGTH_SHORT).show();
         for (Photo photo : photos) {
             Uri locUri = photo.getLocalUri();
             StorageReference imageRef = storageReference.child(String.format("images/%s/%s", appUser.getUid(), editTextDocName.getText().toString()));
@@ -386,7 +383,7 @@ public class TranscribeActivity extends AppCompatActivity {
      */
     void sendRequest(String req) {
         try {
-            URL url = new URL("http://34.142.160.9/app/" + req);
+            URL url = new URL("http://34.143.147.223/app/" + req);
             URLConnection conn = url.openConnection();
             conn.connect();
             Object content = conn.getContent();

@@ -7,13 +7,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -59,12 +65,17 @@ public class DocumentMenuActivity extends AppCompatActivity {
 
     //view
     private RecyclerView recViewDocs;
-    private Button btnNewDoc;
+    private CustomAnimatedButton btnNewDoc;
     private Button btnEditProfile;
     private CircleImageView profileImage;
 
+    private Animation scaleDown;
+    private Animation scaleUp;
 
+    private Boolean notNow = false;
+    private Rect rect;    // Variable rect to hold the bounds of the view
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,11 +83,16 @@ public class DocumentMenuActivity extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_document_menu);
+        GestureDetector gestureDetector = new GestureDetector(this, new SingleTapConfirm());
 
         //user specific elements
         firestore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        //init anim elements
+        scaleUp = AnimationUtils.loadAnimation(this,R.anim.scaleup);
+        scaleDown = AnimationUtils.loadAnimation(this,R.anim.scaledown);
 
         //init view elements
         recViewDocs = findViewById(R.id.recViewDocs);
@@ -92,19 +108,37 @@ public class DocumentMenuActivity extends AppCompatActivity {
         }
 
         //onClickListeners for buttons
-        btnNewDoc.setOnClickListener(new View.OnClickListener() {
+        btnEditProfile.setOnTouchListener(new View.OnTouchListener(){
+            @SuppressLint("ClickableViewAccessibility")
             @Override
-            public void onClick(View v) {
-                openTranscribeActivity();
+            public boolean onTouch(View v, MotionEvent event) {
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+                    profileImage.startAnimation(scaleDown);
+                    btnEditProfile.setPressed(true);
+                    rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                }
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                    if (!notNow) {
+                        profileImage.startAnimation(scaleUp);
+                        openProfilePageActivity();
+                        btnEditProfile.setPressed(false);
+                    } else //button press canceled
+                        notNow = false;
+                }
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+                    if (!notNow)
+                        if (!rect.contains(v.getLeft() + (int) event.getX(), v.getTop() + (int) event.getY())) {
+                            // finger moved out of bounds, return button image to original
+                            profileImage.startAnimation(scaleUp);
+                            btnEditProfile.setPressed(false);
+                            notNow = true; //cancel button press the next time
+                        }
+                }
+                return true;
             }
         });
 
-        btnEditProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openProfilePageActivity();
-            }
-        });
+        btnNewDoc.setAction(this::openTranscribeActivity);
 
         //retrieve ScribexUser
         Intent intent = this.getIntent();
@@ -222,6 +256,21 @@ public class DocumentMenuActivity extends AppCompatActivity {
         transcribeIntent.putExtra("user", appUser);
         startActivity(transcribeIntent);
     }
+
+    // button animation
+    private void btnAnimation(View v) {
+        v.startAnimation(scaleDown);
+        v.startAnimation(scaleUp);
+    }
+
+    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            return true;
+        }
+    }
+
 
     private void openProfilePageActivity() {
         Intent editProfileIntent = new Intent(DocumentMenuActivity.this, ProfilePageActivity.class);
