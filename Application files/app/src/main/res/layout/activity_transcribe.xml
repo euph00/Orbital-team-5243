@@ -58,12 +58,25 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="731dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnUploadbg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:backgroundTint="#000000"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline41"
+            app:layout_constraintVertical_bias="0.0" />
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnUpload"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:backgroundTint="#000000"
+            android:backgroundTint="#00000000"
             android:fontFamily="sans-serif-black"
             android:insetTop="0dp"
             android:insetBottom="0dp"
