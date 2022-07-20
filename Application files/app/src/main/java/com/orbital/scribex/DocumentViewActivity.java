@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.litekite.widget.CircleImageButton;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -48,17 +51,20 @@ public class DocumentViewActivity extends AppCompatActivity {
     private FirebaseStorage firebaseStorage;
 
     //view
-    private Button btnDelete;
+    private CircleImageButton btnDelete;
     private TextView txtName;
     private TextView txtDoc;
-    private Button btnCopy;
-    private CircleImageView btnCopybg;
-    private CircleImageView btnDeletebg;
+    private CircleImageButton btnCopy;
+
 
     // animations
     private Animation scaleDown;
     private Animation scaleUp;
 
+    private Boolean notNow = false;
+    private Rect rect;    // Variable rect to hold the bounds of the view
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,29 +90,70 @@ public class DocumentViewActivity extends AppCompatActivity {
         btnCopy = findViewById(R.id.btnCopy);
         txtName.setText(doc.getName());
         txtDoc.setText(doc.getText());
-        btnCopybg = findViewById(R.id.btnCopybg);
-        btnDeletebg = findViewById(R.id.btnDeletebg);
 
 
         // init anim elements
         scaleUp = AnimationUtils.loadAnimation(this,R.anim.scaleup);
         scaleDown = AnimationUtils.loadAnimation(this,R.anim.scaledown);
 
-
-        //onClickListeners for buttons
-        btnDelete.setOnClickListener(new View.OnClickListener() {
+        // onTouchListener for circleimagebuttons
+        btnCopy.setOnTouchListener(new View.OnTouchListener(){
+            @SuppressLint("ClickableViewAccessibility") //TODO: this needs to happen because of sussy jank implementation of our buttons
             @Override
-            public void onClick(View v) {
-                btnAnimation(btnDeletebg);
-                confirmDeleteDocument();
+            public boolean onTouch(View v, MotionEvent event) {
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+                    btnCopy.startAnimation(scaleDown);
+                    btnCopy.setPressed(true);
+                    rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                }
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                    if (!notNow) {
+                        btnCopy.startAnimation(scaleUp);
+                        copyTextToClip();
+                        btnCopy.setPressed(false);
+                    } else //button press canceled
+                        notNow = false;
+                }
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+                    if (!notNow)
+                        if (!rect.contains(v.getLeft() + (int) event.getX(), v.getTop() + (int) event.getY())) {
+                            // finger moved out of bounds, return button image to original
+                            btnCopy.startAnimation(scaleUp);
+                            btnCopy.setPressed(false);
+                            notNow = true; //cancel button press the next time
+                        }
+                }
+                return true;
             }
         });
 
-        btnCopy.setOnClickListener(new View.OnClickListener() {
+        btnDelete.setOnTouchListener(new View.OnTouchListener(){
+            @SuppressLint("ClickableViewAccessibility") //TODO: this needs to happen because of sussy jank implementation of our buttons
             @Override
-            public void onClick(View v) {
-                btnAnimation(btnCopybg);
-                copyTextToClip();
+            public boolean onTouch(View v, MotionEvent event) {
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
+                    btnDelete.startAnimation(scaleDown);
+                    btnDelete.setPressed(true);
+                    rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                }
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                    if (!notNow) {
+                        btnDelete.startAnimation(scaleUp);
+                        confirmDeleteDocument();
+                        btnDelete.setPressed(false);
+                    } else //button press canceled
+                        notNow = false;
+                }
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_MOVE) {
+                    if (!notNow)
+                        if (!rect.contains(v.getLeft() + (int) event.getX(), v.getTop() + (int) event.getY())) {
+                            // finger moved out of bounds, return button image to original
+                            btnDelete.startAnimation(scaleUp);
+                            btnDelete.setPressed(false);
+                            notNow = true; //cancel button press the next time
+                        }
+                }
+                return true;
             }
         });
     }

@@ -107,32 +107,7 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.87" />
 
-<!--        <com.litekite.widget.CircleImageButton-->
-<!--            android:id="@+id/btnDelete"-->
-<!--            android:layout_width="@dimen/_35ssp"-->
-<!--            android:layout_height="@dimen/_35ssp"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/guideline39"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/guideline14"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/guideline15"-->
-<!--            app:layout_constraintTop_toTopOf="@+id/guideline5"-->
-<!--            android:src="@drawable/ic_baseline_delete_forever_24"-->
-<!--            android:background="@drawable/delete_doc_button"/>-->
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/btnDeletebg"
-            android:layout_width="@dimen/_35ssp"
-            android:layout_height="@dimen/_35ssp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline39"
-            app:layout_constraintEnd_toStartOf="@+id/guideline14"
-            app:layout_constraintStart_toStartOf="@+id/guideline15"
-            app:layout_constraintTop_toTopOf="@+id/guideline5"
-            android:src="@drawable/ic_baseline_delete_forever_24"
-            android:background="@drawable/delete_doc_button"
-            android:scaleX="1"
-            android:scaleY="1"
-            />
-
-        <Button
+        <com.litekite.widget.CircleImageButton
             android:id="@+id/btnDelete"
             android:layout_width="@dimen/_35ssp"
             android:layout_height="@dimen/_35ssp"
@@ -140,10 +115,11 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline14"
             app:layout_constraintStart_toStartOf="@+id/guideline15"
             app:layout_constraintTop_toTopOf="@+id/guideline5"
-            android:background="@drawable/transparent_button" />
+            android:src="@drawable/ic_baseline_delete_forever_24"
+            android:background="@drawable/delete_doc_button"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/btnCopybg"
+        <com.litekite.widget.CircleImageButton
+            android:id="@+id/btnCopy"
             android:layout_width="@dimen/_35ssp"
             android:layout_height="@dimen/_35ssp"
             android:background="@drawable/delete_doc_button"
@@ -153,33 +129,8 @@
             app:layout_constraintHorizontal_bias="0.513"
             app:layout_constraintStart_toStartOf="@+id/header"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.647" />
-
-        <Button
-            android:id="@+id/btnCopy"
-            android:layout_width="@dimen/_35ssp"
-            android:layout_height="@dimen/_35ssp"
-            android:background="@drawable/transparent_button"
-            app:layout_constraintBottom_toTopOf="@+id/guideline39"
-            app:layout_constraintEnd_toStartOf="@+id/guideline1"
-            app:layout_constraintHorizontal_bias="0.513"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.647" />
-
-<!--        <com.litekite.widget.CircleImageButton-->
-<!--            android:id="@+id/btnCopy"-->
-<!--            android:layout_width="@dimen/_35ssp"-->
-<!--            android:layout_height="@dimen/_35ssp"-->
-<!--            android:background="@drawable/delete_doc_button"-->
-<!--            android:src="@drawable/ic_copy_foreground"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/guideline39"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/guideline1"-->
-<!--            app:layout_constraintHorizontal_bias="0.513"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/header"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintVertical_bias="0.647"-->
-<!--            />-->
+            app:layout_constraintVertical_bias="0.647"
+            />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

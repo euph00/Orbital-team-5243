@@ -109,7 +109,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
 
         //onClickListeners for buttons
         btnEditProfile.setOnTouchListener(new View.OnTouchListener(){
-            @SuppressLint("ClickableViewAccessibility") //TODO: this needs to happen because of sussy jank implementation of our buttons
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
