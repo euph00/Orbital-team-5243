@@ -119,7 +119,7 @@ public class ProfilePageActivity extends AppCompatActivity {
 
         buttonApplyChanges.setAction(() -> updateProfileName(userNameSupplier));
 
-        buttonDeleteAccount.setAction(this::deleteAccount);
+        buttonDeleteAccount.setAction(this::confirmDeleteAccount);
     }
 
     private void confirmDeleteAccount() {
