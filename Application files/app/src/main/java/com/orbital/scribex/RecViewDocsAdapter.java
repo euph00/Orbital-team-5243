@@ -45,7 +45,7 @@ public class RecViewDocsAdapter extends RecyclerView.Adapter<RecViewDocsAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: Called");
         holder.name_doc.setText(docs.get(position).getName());
-        Picasso.with(context).load(docs.get(position).getUrl()).rotate(90).into(holder.img_doc);
+        Picasso.with(context).load(docs.get(position).getUrl()).into(holder.img_doc);
         holder.snippet_doc.setText(docs.get(position).getSnippet());
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
