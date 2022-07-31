@@ -15,7 +15,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -42,8 +41,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -377,21 +374,8 @@ public class TranscribeActivity extends AppCompatActivity {
         return null;
     }
 
-    /**
-     * sends request to backend to begin transcription
-     * @param req   request id, currently implemented as user id
-     */
-    void sendRequest(String req) {
-        try {
-            URL url = new URL("http://34.143.147.223/app/" + req);
-            URLConnection conn = url.openConnection();
-            conn.connect();
-            Object content = conn.getContent();
-
-            Log.d(TAG, "success on pinging server" + content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    boolean sendRequest(String req) {
+        return RequesterUtils.sendRequest(req);
     }
 
     private void openDocumentMenuActivity() {

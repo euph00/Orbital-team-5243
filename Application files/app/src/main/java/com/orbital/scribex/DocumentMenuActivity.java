@@ -185,7 +185,7 @@ public class DocumentMenuActivity extends AppCompatActivity {
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Document document = new Document(name, name, null, readFile(localFile));
+                    Document document = new Document(name, name, null, RequesterUtils.readFile(localFile));
                     document.setOwner(appUser);
                     docs.add(document);
                     Log.d(TAG, String.valueOf(docs.size()));
@@ -232,23 +232,6 @@ public class DocumentMenuActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    /**
-     * Reads txt file into a String
-     * @param file  File object, the txt file to be read
-     * @return  String of the file contents
-     */
-    private String readFile(File file) {
-        try {
-            Scanner sc = new Scanner(file);
-            StringBuffer sb = new StringBuffer();
-            while (sc.hasNextLine()) sb.append(sc.nextLine());
-            return sb.toString();
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, e.getLocalizedMessage());
-            return null;
-        }
     }
 
     private void openTranscribeActivity() {
